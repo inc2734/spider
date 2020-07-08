@@ -79,6 +79,10 @@ or
 </div>
 ```
 
+## Demo
+- [Using CDN](https://inc2734.github.io/spider/)
+- [Using Rollup](https://inc2734.github.io/spider/index-next.html)
+
 ## Support browsers
 
 Modern browsers and IE11

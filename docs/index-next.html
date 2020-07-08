@@ -7,11 +7,15 @@
   <link rel="stylesheet" href="dist/css/app.css">
   <style>
   body {
+    margin: 0;
+  }
+
+  .container {
     max-width: 1024px;
     margin: 0 auto;
   }
 
-  body > *:not(:first-child) {
+  .container > *:not(:first-child) {
     margin-top: 2em;
   }
 
@@ -26,61 +30,67 @@
 </head>
 <body>
 
-<h2>Default</h2>
-<div class="spider">
-  <div class="spider__canvas">
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/blue.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/green.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/orange.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/pink.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/purple.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
-      </p>
-    </div>
-  </div>
-</div>
-
-<h2>Arrow and Dots</h2>
-<div class="spider my-slider">
-  <div class="spider__canvas">
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/blue.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/green.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/orange.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/pink.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <img class="spider__figure" src="img/purple.jpg" alt="">
-    </div>
-    <div class="spider__slide">
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
-      </p>
+<div class="container">
+  <h2>Default</h2>
+  <div class="spider">
+    <div class="spider__canvas">
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/blue.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/green.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/orange.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/pink.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/purple.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
+        </p>
+      </div>
     </div>
   </div>
 
-  <div class="spider__dots"></div>
+  <h2>Arrow and Dots</h2>
+  <div class="spider my-slider">
+    <div class="spider__canvas">
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/blue.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/green.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/orange.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/pink.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <img class="spider__figure" src="img/purple.jpg" alt="">
+      </div>
+      <div class="spider__slide">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
+        </p>
+      </div>
+    </div>
 
-  <button class="spider__arrow" data-direction="prev">Prev</button>
-  <button class="spider__arrow" data-direction="next">Next</button>
+    <div class="spider__dots"></div>
+
+    <button class="spider__arrow" data-direction="prev">Prev</button>
+    <button class="spider__arrow" data-direction="next">Next</button>
+  </div>
+
+  <p>
+    GitHub: <a href="https://github.com/inc2734/spider">https://github.com/inc2734/spider</a>
+  </p>
 </div>
 
 </body>
