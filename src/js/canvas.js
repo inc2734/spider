@@ -50,7 +50,7 @@ export const Canvas = (canvas, args) => {
 
   const handleScroll = () => {
     updateCurrent();
-    scrollLock();
+    // scrollLock();
   };
   canvas.addEventListener('scroll', handleScroll, false);
 };

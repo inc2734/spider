@@ -35,39 +35,64 @@ const newSpider = (target, options) => {
     this.nextArrow   = target.querySelector(this.options.nextArrow);
     this.dotsWrapper = target.querySelector(this.options.dotsWrapper);
 
-    this.prev = () => {
-      const current  = Number(this.canvas.getAttribute('data-current'));
-      const prevItem = this.slides[ current - 1 ] || this.slides[ current ];
+    /**
+     * I'd really like to use this, but there are a lot of unsupported browsers, so I'll use an alternative code.
+     *
+     * @see https://developer.mozilla.org/ja/docs/Web/API/Element/scrollTo
+     */
+    let smoothScrollToTimerId;
+    const smoothScrollTo = (left) => {
+      clearInterval(smoothScrollToTimerId);
 
-      this.canvas.scrollTo(
-        {
-          left: this.canvas.scrollLeft + prevItem.getBoundingClientRect().left,
-          behavior: 'smooth',
-        }
+      const start = this.canvas.scrollLeft;
+      const direction = 0 < left - start ? 'next' : left !== start ? 'prev' : false;
+      if (! direction) return;
+
+      const step = (left - start) / 20;
+      let beforeCanvasScrollLeft = start;
+      this.canvas.style.scrollSnapType = 'none';
+
+      smoothScrollToTimerId = setInterval(
+        () => {
+          this.canvas.scrollLeft = this.canvas.scrollLeft + step;
+
+          if (
+            'next' === direction && left <= this.canvas.scrollLeft
+            || 'prev' === direction && left >= this.canvas.scrollLeft
+            || beforeCanvasScrollLeft === this.canvas.scrollLeft
+          ) {
+            clearInterval(smoothScrollToTimerId);
+            this.canvas.style.scrollSnapType = '';
+            this.canvas.scrollLeft = left;
+          }
+
+          beforeCanvasScrollLeft = this.canvas.scrollLeft;
+        },
+        10
       );
     };
 
-    this.next = () => {
-      const current  = Number(this.canvas.getAttribute('data-current'));
-      const nextItem = this.slides[ current + 1 ] || this.slides[ current ];
+    this.prev = () => {
+      const current   = Number(this.canvas.getAttribute('data-current'));
+      this.moveTo(current - 1);
+    };
 
-      this.canvas.scrollTo(
-        {
-          left: this.canvas.scrollLeft + nextItem.getBoundingClientRect().left,
-          behavior: 'smooth',
-        }
-      );
+    this.next = () => {
+      const current   = Number(this.canvas.getAttribute('data-current'));
+      this.moveTo(current + 1);
     }
 
     this.moveTo = (index) => {
-      const nextItem = this.slides[ index ] || this.slides[ current ];
+      const current = Number(this.canvas.getAttribute('data-current'));
+      if (current === index) {
+        return;
+      }
 
-      this.canvas.scrollTo(
-        {
-          left: this.canvas.scrollLeft + nextItem.getBoundingClientRect().left,
-          behavior: 'smooth',
-        }
-      );
+      const nextItem  = this.slides[ index ] || this.slides[ current ];
+      const canvasX   = this.canvas.getBoundingClientRect().left;
+      const nextItemX = nextItem.getBoundingClientRect().left;
+
+      smoothScrollTo(this.canvas.scrollLeft + nextItemX - canvasX);
     };
 
     if (this.prevArrow) {
