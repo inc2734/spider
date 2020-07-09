@@ -28,15 +28,16 @@ export const Canvas = (canvas, args) => {
         }
       );
 
-      if (-1 !== itemXList.indexOf(canvasX)) {
+      if (-1 !== itemXList.indexOf(0)) {
         return;
       }
 
       const min  = Math.min(...itemXList);
       const near = itemXList.indexOf(min);
-      const nearItem = args.slides[ near ];
+      const nearItem  = args.slides[ near ];
+      const nearItemX = nearItem.getBoundingClientRect().left;
       if (nearItem) {
-        canvas.scrollLeft += nearItem.getBoundingClientRect().left;
+        canvas.scrollLeft += (nearItemX - canvasX);
       }
       canvasScrollTimerId = undefined;
     };
@@ -50,7 +51,7 @@ export const Canvas = (canvas, args) => {
 
   const handleScroll = () => {
     updateCurrent();
-    // scrollLock();
+    scrollLock();
   };
   canvas.addEventListener('scroll', handleScroll, false);
 };
