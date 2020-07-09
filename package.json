@@ -42,7 +42,8 @@
     "docs:js": "npm run docs:clean:js && rollup -c docs/rollup.config.js",
     "docs:css": "node-sass docs/src/css/app.scss docs/dist/css/app.css && postcss -r docs/dist/css/app.css -c=postcss.config.js",
     "docs": "npm-run-all -p docs:js docs:css",
-    "build": "npm-run-all -p css js docs"
+    "build": "npm-run-all -p css js docs",
+    "server": "browser-sync start --server 'docs' --index 'index-next.html' --files 'docs'"
   },
   "dependencies": {}
 }

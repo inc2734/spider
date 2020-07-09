@@ -88,11 +88,11 @@ const newSpider = (target, options) => {
         return;
       }
 
-      const nextItem  = this.slides[ index ] || this.slides[ current ];
+      const nextSlide  = this.slides[ index ] || this.slides[ current ];
       const canvasX   = this.canvas.getBoundingClientRect().left;
-      const nextItemX = nextItem.getBoundingClientRect().left;
+      const nextSlideX = nextSlide.getBoundingClientRect().left;
 
-      smoothScrollTo(this.canvas.scrollLeft + nextItemX - canvasX);
+      smoothScrollTo(this.canvas.scrollLeft + nextSlideX - canvasX);
     };
 
     if (this.prevArrow) {

@@ -6,56 +6,69 @@ export const Canvas = (canvas, args) => {
 
   let canvasScrollTimerId = undefined;
 
-  const updateCurrent = () => {
-    const canvasX = canvas.getBoundingClientRect().left;
-    [].slice.call(args.slides).forEach(
-      (item, index) => {
-        const itemX = item.getBoundingClientRect().left;
-        if (canvasX === itemX) {
-          canvas.setAttribute('data-current', index);
-          return;
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(
+        (entry) => {
+          if (0 >= canvas.scrollLeft) {
+            return;
+          }
+
+          const current     = Number(canvas.getAttribute('data-current'));
+          const entrySlideX = entry.boundingClientRect.left;
+
+          let newCurrent = current;
+          if (! entry.isIntersecting && 0 > entrySlideX) { // next
+            newCurrent = Number(entry.target.getAttribute('data-id')) + 1;
+          } else if (entry.isIntersecting && 0 > entrySlideX) { // prev
+            newCurrent = Number(entry.target.getAttribute('data-id'));
+          }
+
+          canvas.setAttribute('data-current', newCurrent);
         }
-      }
-    );
-  };
+      );
+    },
+    {
+      root: canvas,
+      rootMargin: '0px',
+      threshold: 0,
+    }
+  );
+  [].slice.call(args.slides).forEach(
+    (slide, index) => {
+      slide.setAttribute('data-id', index);
+      observer.observe(slide);
+    }
+  );
 
   const scrollLock = () => {
     const canvasX   = canvas.getBoundingClientRect().left;
-    const itemXList = [];
+    const slideXList = [];
     [].slice.call(args.slides).forEach(
-      (item, index) => {
-        const itemX = item.getBoundingClientRect().left;
-        itemXList[ index ] = Math.abs(itemX - canvasX);
+      (slide, index) => {
+        const slideX = slide.getBoundingClientRect().left;
+        slideXList[ index ] = Math.abs(slideX - canvasX);
       }
     );
 
-    if (-1 !== itemXList.indexOf(0)) {
+    if (-1 !== slideXList.indexOf(0)) {
       return;
     }
 
-    const min  = Math.min(...itemXList);
-    const near = itemXList.indexOf(min);
-    const nearItem  = args.slides[ near ];
-    const nearItemX = nearItem.getBoundingClientRect().left;
-    if (nearItem) {
-      canvas.scrollLeft += (nearItemX - canvasX);
+    const min  = Math.min(...slideXList);
+    const near = slideXList.indexOf(min);
+    const nearSlide  = args.slides[ near ];
+    const nearSlideX = nearSlide.getBoundingClientRect().left;
+    if (nearSlide) {
+      canvas.scrollLeft += (nearSlideX - canvasX);
     }
   };
 
-  let test = 0;
   canvas.addEventListener(
     'scroll',
     () => {
       clearTimeout(canvasScrollTimerId);
-
-      canvasScrollTimerId = setTimeout(
-        () => {
-          test ++;
-          console.log(test);
-          addCustomEvent(canvas, 'scrollEnd');
-        },
-        100
-      );
+      canvasScrollTimerId = setTimeout(() => addCustomEvent(canvas, 'scrollEnd'), 100);
     },
     false
   );
@@ -63,7 +76,6 @@ export const Canvas = (canvas, args) => {
   canvas.addEventListener(
     'scrollEnd',
     () => {
-      updateCurrent();
       scrollLock();
     },
     false
