@@ -1,14 +1,85 @@
 import addCustomEvent from '@inc2734/add-custom-event';
 
-export const Canvas = (canvas, args) => {
+export function Canvas(canvas, args) {
+  this.slides = canvas.querySelectorAll(args.slide);
+
+  this.setCurrent = (index) => {
+    canvas.setAttribute('data-current', index);
+  };
+
+  this.getCurrent = () => {
+    return Number(canvas.getAttribute('data-current'));
+  };
+
   canvas.scrollLeft = 0;
-  canvas.setAttribute('data-current', 0);
+  this.setCurrent(0);
 
   let canvasScrollTimerId = undefined;
 
-  [].slice.call(args.slides).forEach(
+  [].slice.call(this.slides).forEach(
     (slide, index) => {
       slide.setAttribute('data-id', index);
+    }
+  );
+
+  /**
+   * I'd really like to use this, but there are a lot of unsupported browsers, so I'll use an alternative code.
+   *
+   * @see https://developer.mozilla.org/ja/docs/Web/API/Element/scrollTo
+   */
+  let smoothScrollToTimerId;
+  const smoothScrollTo = (left) => {
+    clearInterval(smoothScrollToTimerId);
+
+    const start = canvas.scrollLeft;
+    const direction = 0 < left - start ? 'next' : left !== start ? 'prev' : false;
+    if (! direction) return;
+
+    const step = (left - start) / 20;
+    let beforeCanvasScrollLeft = start;
+    canvas.style.scrollSnapType = 'none';
+
+    smoothScrollToTimerId = setInterval(
+      () => {
+        canvas.scrollLeft = canvas.scrollLeft + step;
+
+        if (
+          'next' === direction && left <= canvas.scrollLeft
+          || 'prev' === direction && left >= canvas.scrollLeft
+          || beforeCanvasScrollLeft === canvas.scrollLeft
+        ) {
+          clearInterval(smoothScrollToTimerId);
+          canvas.style.scrollSnapType = '';
+          canvas.scrollLeft = left;
+        }
+
+        beforeCanvasScrollLeft = canvas.scrollLeft;
+      },
+      10
+    );
+  };
+
+  const observer = new MutationObserver(
+    () => {
+      const current      = this.getCurrent();
+      const currentSlide = this.slides[ current ];
+      if (! currentSlide) {
+        return;
+      }
+
+      const currentSlideX    = currentSlide.getBoundingClientRect().left;
+      const canvasX          = canvas.getBoundingClientRect().left;
+      const currentSlideRelX = currentSlideX - canvasX;
+
+      smoothScrollTo(canvas.scrollLeft + currentSlideRelX);
+    }
+  );
+
+  observer.observe(
+    canvas,
+    {
+      attributes: true,
+      attributeFilter: ['data-current']
     }
   );
 
@@ -20,7 +91,7 @@ export const Canvas = (canvas, args) => {
     const canvasX       = canvas.getBoundingClientRect().left;
     const slideRelXList = [];
 
-    [].slice.call(args.slides).some(
+    [].slice.call(this.slides).some(
       (slide, index) => {
         const slideX    = slide.getBoundingClientRect().left;
         const slideRelX = slideX - canvasX;
@@ -33,10 +104,10 @@ export const Canvas = (canvas, args) => {
 
     const min        = Math.min(...slideRelXList);
     const near       = slideRelXList.indexOf(min);
-    const nearSlide  = args.slides[ near ];
+    const nearSlide  = this.slides[ near ];
     const nearSlideX = nearSlide.getBoundingClientRect().left;
 
-    canvas.setAttribute('data-current', nearSlide.getAttribute('data-id'));
+    this.setCurrent(nearSlide.getAttribute('data-id'));
     scrollLock(canvas.scrollLeft + slideRelXList[ near ]);
   };
 
@@ -56,4 +127,6 @@ export const Canvas = (canvas, args) => {
     },
     false
   );
-};
+
+  return this;
+}

@@ -4,6 +4,12 @@ body {
   margin: 0;
 }
 
+pre {
+  background-color: #f5f5f5;
+  overflow: auto;
+  padding: 1em;
+}
+
 .container {
   max-width: 1024px;
   margin: 0 auto;

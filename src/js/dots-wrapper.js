@@ -1,10 +1,17 @@
-export const DotsWrapper = (dotsWrapper, args) => {
+export function DotsWrapper(dotsWrapper, args) {
+  this.updateCurrent = (index) => {
+    const oldDot = dotsWrapper.querySelector(`${ args.dot }[aria-current="true"]`);
+    const newDot = dotsWrapper.querySelector(`${ args.dot }[data-id="${ index }"]`);
+    !! oldDot && oldDot.setAttribute('aria-current', 'false');
+    !! newDot && newDot.setAttribute('aria-current', 'true');
+  };
+
   const createDot = (className, index) => {
     const dot  = document.createElement('button');
     const text = document.createTextNode(index);
     dot.appendChild(text);
     dot.classList.add(className);
-    dot.setAttribute('data-index', index);
+    dot.setAttribute('data-id', index);
     return dot;
   };
 
@@ -14,21 +21,5 @@ export const DotsWrapper = (dotsWrapper, args) => {
     dot.addEventListener('click', (event) => args.handleClick(event), false);
   }
 
-  const observer = new MutationObserver(
-    () => {
-      const current = args.canvas.getAttribute('data-current');
-      const oldDot  = dotsWrapper.querySelector(`${ args.dot }[aria-current="true"]`);
-      const newDot  = dotsWrapper.querySelector(`${ args.dot }[data-index="${ current }"]`);
-      !! oldDot && oldDot.setAttribute('aria-current', 'false');
-      !! newDot && newDot.setAttribute('aria-current', 'true');
-    }
-  );
-
-  observer.observe(
-    args.canvas,
-    {
-      attributes: true,
-      attributeFilter: ['data-current']
-    }
-  );
+  return this;
 }

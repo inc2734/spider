@@ -26,111 +26,75 @@ const newSpider = (target, options) => {
     return;
   }
 
+  const prevArrow   = target.querySelector(options.prevArrow);
+  const nextArrow   = target.querySelector(options.nextArrow);
+  const dotsWrapper = target.querySelector(options.dotsWrapper);
+
   return new function() {
-    this.target      = target
-    this.options     = options;
-    this.canvas      = canvas;
-    this.slides      = this.canvas.querySelectorAll(this.options.slide);
-    this.prevArrow   = target.querySelector(this.options.prevArrow);
-    this.nextArrow   = target.querySelector(this.options.nextArrow);
-    this.dotsWrapper = target.querySelector(this.options.dotsWrapper);
+    this.target  = target
+    this.options = options;
 
-    /**
-     * I'd really like to use this, but there are a lot of unsupported browsers, so I'll use an alternative code.
-     *
-     * @see https://developer.mozilla.org/ja/docs/Web/API/Element/scrollTo
-     */
-    let smoothScrollToTimerId;
-    const smoothScrollTo = (left) => {
-      clearInterval(smoothScrollToTimerId);
-
-      const start = this.canvas.scrollLeft;
-      const direction = 0 < left - start ? 'next' : left !== start ? 'prev' : false;
-      if (! direction) return;
-
-      const step = (left - start) / 20;
-      let beforeCanvasScrollLeft = start;
-      this.canvas.style.scrollSnapType = 'none';
-
-      smoothScrollToTimerId = setInterval(
-        () => {
-          this.canvas.scrollLeft = this.canvas.scrollLeft + step;
-
-          if (
-            'next' === direction && left <= this.canvas.scrollLeft
-            || 'prev' === direction && left >= this.canvas.scrollLeft
-            || beforeCanvasScrollLeft === this.canvas.scrollLeft
-          ) {
-            clearInterval(smoothScrollToTimerId);
-            this.canvas.style.scrollSnapType = '';
-            this.canvas.scrollLeft = left;
-          }
-
-          beforeCanvasScrollLeft = this.canvas.scrollLeft;
-        },
-        10
-      );
-    };
+    this.canvas = new Canvas(
+      canvas,
+      {
+        slide: this.options.slide,
+      }
+    );
 
     this.prev = () => {
-      const current   = Number(this.canvas.getAttribute('data-current'));
-      this.moveTo(current - 1);
+      const current = this.canvas.getCurrent();
+      0 < current && this.canvas.setCurrent(current - 1);
     };
 
     this.next = () => {
-      const current   = Number(this.canvas.getAttribute('data-current'));
-      this.moveTo(current + 1);
+      const current = this.canvas.getCurrent();
+      this.canvas.slides.length - 1 > current && this.canvas.setCurrent(current + 1)
     }
 
     this.moveTo = (index) => {
-      const current = Number(this.canvas.getAttribute('data-current'));
-      if (current === index) {
-        return;
-      }
-
-      const nextSlide  = this.slides[ index ] || this.slides[ current ];
-      const canvasX   = this.canvas.getBoundingClientRect().left;
-      const nextSlideX = nextSlide.getBoundingClientRect().left;
-
-      smoothScrollTo(this.canvas.scrollLeft + nextSlideX - canvasX);
+      const current = this.canvas.getCurrent();
+      !! this.canvas.slides[ index ] && this.canvas.setCurrent(index);
     };
 
-    if (this.prevArrow) {
-      PrevArrow(
-        this.prevArrow,
+    if (prevArrow) {
+      this.prevArrow = new PrevArrow(
+        prevArrow,
         {
           handleClick: this.prev,
         }
       );
     }
 
-    if (this.nextArrow) {
-      NextArrow(
-        this.nextArrow,
+    if (nextArrow) {
+      this.nextArrow = new NextArrow(
+        nextArrow,
         {
           handleClick: this.next,
         }
       );
     }
 
-    if (this.dotsWrapper) {
-      DotsWrapper(
-        this.dotsWrapper,
+    if (dotsWrapper) {
+      this.dotsWrapper = new DotsWrapper(
+        dotsWrapper,
         {
-          numberOfSlides: this.slides.length,
-          canvas: this.canvas,
+          numberOfSlides: this.canvas.slides.length,
           dot: this.options.dot,
-          handleClick: (event) => this.moveTo(event.currentTarget.getAttribute('data-index')),
+          handleClick: (event) => this.canvas.setCurrent(event.currentTarget.getAttribute('data-id')),
+        }
+      );
+
+      const observerCallback = () => this.dotsWrapper.updateCurrent(this.canvas.getCurrent());
+      const observer = new MutationObserver(observerCallback);
+      observerCallback();
+      observer.observe(
+        canvas,
+        {
+          attributes: true,
+          attributeFilter: ['data-current']
         }
       );
     }
-
-    Canvas(
-      this.canvas,
-      {
-        slides: this.slides,
-      }
-    );
 
     target.setAttribute('data-initialized', 'true');
     addCustomEvent(target, 'initialized');
