@@ -48,11 +48,15 @@ export function Canvas(canvas, args) {
     let beforeCanvasScrollLeft = start;
     canvas.style.scrollSnapType = 'none';
 
+    const easeOutCirc = (x) => {
+      return Math.sqrt(1 - Math.pow(x - 1, 2));
+    };
+
     let count = 0;
     smoothScrollToTimerId = setInterval(
       () => {
         count += Math.abs(step);
-        this.setScrollLeft(canvas.scrollLeft + step);
+        this.setScrollLeft(start + range * easeOutCirc(count / Math.abs(range)))
 
         if (Math.abs(range) <= count) {
           clearInterval(smoothScrollToTimerId);
