@@ -124,12 +124,19 @@ export default function Spider(target, args = {}) {
   }
 
   if ('string' === typeof target) {
-    const sliders = document.querySelectorAll(target);
-    if (1 > sliders.length) {
-      return;
+    if (target.match(/^#/)) {
+      const slider = document.querySelector(target);
+      if (! slider) {
+        return;
+      }
+      return newSpider(slider, options);
+    } else {
+      const sliders = document.querySelectorAll(target);
+      if (1 > sliders.length) {
+        return;
+      }
+      return newSpiders(sliders, options);
     }
-
-    return newSpiders(sliders, options);
   } else if (true === target instanceof NodeList) {
     return newSpiders(target, options);
   } else if (true === target instanceof HTMLElement) {

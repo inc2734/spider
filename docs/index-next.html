@@ -22,128 +22,140 @@
   <h1>Spider (Using import)</h1>
 
   <h2>Default</h2>
-  <div class="spider" id="default">
-    <div class="spider__canvas">
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/blue.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/green.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/orange.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/pink.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/purple.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
-        </p>
+  <div class="spider-container" id="default">
+    <div class="spider">
+      <div class="spider__canvas">
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/blue.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/green.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/orange.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/pink.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/purple.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
+          </p>
+        </div>
       </div>
     </div>
   </div>
 
-  <pre>&lt;div class="spider"&gt;
-  &lt;div class="spider__canvas"&gt;
-    &lt;div class="spider__slide"&gt;
-      &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+  <pre>&lt;div class="spider-container"&gt;
+  &lt;div class="spider"&gt;
+    &lt;div class="spider__canvas"&gt;
+      &lt;div class="spider__slide"&gt;
+        &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+      &lt;/div&gt;
+      ...
     &lt;/div&gt;
-    ...
   &lt;/div&gt;
 &lt;/div&gt;</pre>
 
   <h2>Arrow and Dots</h2>
-  <div class="spider" id="arrows-and-dots">
-    <div class="spider__canvas">
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/blue.jpg" alt="">
+  <div class="spider-container" id="arrows-and-dots">
+    <div class="spider">
+      <div class="spider__canvas">
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/blue.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/green.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/orange.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/pink.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/purple.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
+          </p>
+        </div>
       </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/green.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/orange.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/pink.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/purple.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
-        </p>
-      </div>
+
+      <div class="spider__dots"></div>
+
+      <button class="spider__arrow" data-direction="prev">Prev</button>
+      <button class="spider__arrow" data-direction="next">Next</button>
     </div>
-
-    <div class="spider__dots"></div>
-
-    <button class="spider__arrow" data-direction="prev">Prev</button>
-    <button class="spider__arrow" data-direction="next">Next</button>
   </div>
 
-  <pre>&lt;div class="spider"&gt;
-  &lt;div class="spider__canvas"&gt;
-    &lt;div class="spider__slide"&gt;
-      &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+  <pre>&lt;div class="spider-container"&gt;
+    &lt;div class="spider"&gt;
+    &lt;div class="spider__canvas"&gt;
+      &lt;div class="spider__slide"&gt;
+        &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+      &lt;/div&gt;
+      ...
     &lt;/div&gt;
-    ...
+
+    &lt;div class="spider__dots"&gt;&lt;/div&gt;
+
+    &lt;button class="spider__arrow" data-direction="prev"&gt;Prev&lt;/button&gt;
+    &lt;button class="spider__arrow" data-direction="next"&gt;Next&lt;/button&gt;
   &lt;/div&gt;
-
-  &lt;div class="spider__dots"&gt;&lt;/div&gt;
-
-  &lt;button class="spider__arrow" data-direction="prev"&gt;Prev&lt;/button&gt;
-  &lt;button class="spider__arrow" data-direction="next"&gt;Next&lt;/button&gt;
 &lt;/div&gt;</pre>
 
   <h2>Multi display</h2>
-  <div class="spider my-slider" id="multi-display">
-    <div class="spider__canvas">
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/blue.jpg" alt="">
+  <div class="spider-container my-slider" id="multi-display">
+    <div class="spider">
+      <div class="spider__canvas">
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/blue.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/green.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/orange.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/pink.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/purple.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
+          </p>
+        </div>
       </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/green.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/orange.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/pink.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <img class="spider__figure" src="img/purple.jpg" alt="">
-      </div>
-      <div class="spider__slide">
-        <p>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
-        </p>
-      </div>
+
+      <div class="spider__dots"></div>
+
+      <button class="spider__arrow" data-direction="prev">Prev</button>
+      <button class="spider__arrow" data-direction="next">Next</button>
     </div>
-
-    <div class="spider__dots"></div>
-
-    <button class="spider__arrow" data-direction="prev">Prev</button>
-    <button class="spider__arrow" data-direction="next">Next</button>
   </div>
 
-  <pre>&lt;div class="spider my-slider"&gt;
-  &lt;div class="spider__canvas"&gt;
-    &lt;div class="spider__slide"&gt;
-      &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+  <pre>&lt;div class="spider-container my-slider"&gt;
+  &lt;div class="spider"&gt;
+    &lt;div class="spider__canvas"&gt;
+      &lt;div class="spider__slide"&gt;
+        &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+      &lt;/div&gt;
+      ...
     &lt;/div&gt;
-    ...
+
+    &lt;div class="spider__dots"&gt;&lt;/div&gt;
+
+    &lt;button class="spider__arrow" data-direction="prev"&gt;Prev&lt;/button&gt;
+    &lt;button class="spider__arrow" data-direction="next"&gt;Next&lt;/button&gt;
   &lt;/div&gt;
-
-  &lt;div class="spider__dots"&gt;&lt;/div&gt;
-
-  &lt;button class="spider__arrow" data-direction="prev"&gt;Prev&lt;/button&gt;
-  &lt;button class="spider__arrow" data-direction="next"&gt;Next&lt;/button&gt;
 &lt;/div&gt;
 
 &lt;style&gt;
@@ -154,6 +166,59 @@
   margin-right: 20px;
 }
 &lt;/style&gt;</pre>
+
+  <h2>Using id selector</h2>
+  <div id="using-id-selector">
+    <div class="spider">
+      <div class="spider__canvas">
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/blue.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/green.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/orange.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/pink.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/purple.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
+          </p>
+        </div>
+      </div>
+
+      <div class="spider__dots"></div>
+
+      <button class="spider__arrow" data-direction="prev">Prev</button>
+      <button class="spider__arrow" data-direction="next">Next</button>
+    </div>
+  </div>
+
+  <pre>&lt;div id="using-id-selector"&gt;
+  &lt;div class="spider"&gt;
+    &lt;div class="spider__canvas"&gt;
+      &lt;div class="spider__slide"&gt;
+        &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+      &lt;/div&gt;
+      ...
+    &lt;/div&gt;
+
+    &lt;div class="spider__dots"&gt;&lt;/div&gt;
+
+    &lt;button class="spider__arrow" data-direction="prev"&gt;Prev&lt;/button&gt;
+    &lt;button class="spider__arrow" data-direction="next"&gt;Next&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+var spider = new Spider('#using-id-selector');
+&lt;/script&gt;</pre>
 
   <p>
     GitHub: <a href="https://github.com/inc2734/spider">https://github.com/inc2734/spider</a>
