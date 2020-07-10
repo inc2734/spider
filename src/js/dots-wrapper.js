@@ -17,8 +17,8 @@ export const DotsWrapper = (dotsWrapper, args) => {
   const observer = new MutationObserver(
     () => {
       const current = args.canvas.getAttribute('data-current');
-      const oldDot = dotsWrapper.querySelector(`${ args.dot }[aria-current="true"]`);
-      const newDot = dotsWrapper.querySelector(`${ args.dot }[data-index="${ current }"]`);
+      const oldDot  = dotsWrapper.querySelector(`${ args.dot }[aria-current="true"]`);
+      const newDot  = dotsWrapper.querySelector(`${ args.dot }[data-index="${ current }"]`);
       !! oldDot && oldDot.setAttribute('aria-current', 'false');
       !! newDot && newDot.setAttribute('aria-current', 'true');
     }

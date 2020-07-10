@@ -40,7 +40,9 @@
     "docs:clean:js": "rimraf docs/dist/js && mkdir -p docs/dist/js",
     "docs:clean:css": "rimraf docs/dist/css && mkdir -p docs/dist/css",
     "docs:js": "npm run docs:clean:js && rollup -c docs/rollup.config.js",
-    "docs:css": "node-sass docs/src/css/app.scss docs/dist/css/app.css && postcss -r docs/dist/css/app.css -c=postcss.config.js",
+    "docs:css:general": "node-sass docs/src/css/general.scss docs/dist/css/general.css && postcss -r docs/dist/css/general.css -c=postcss.config.js",
+    "docs:css:app": "node-sass docs/src/css/app.scss docs/dist/css/app.css && postcss -r docs/dist/css/app.css -c=postcss.config.js",
+    "docs:css": "npm-run-all -p docs:css:*",
     "docs": "npm-run-all -p docs:js docs:css",
     "build": "npm-run-all -p css js docs",
     "server": "browser-sync start --server 'docs' --index 'index-next.html' --files 'docs'"

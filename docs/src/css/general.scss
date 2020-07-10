@@ -1,0 +1,15 @@
+@charset 'utf-8';
+
+body {
+  margin: 0;
+}
+
+.container {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 0 1em;
+}
+
+.container > *:not(:first-child) {
+  margin-top: 2em;
+}
