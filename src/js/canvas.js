@@ -11,7 +11,11 @@ export function Canvas(canvas, args) {
     return Number(canvas.getAttribute('data-current'));
   };
 
-  canvas.scrollLeft = 0;
+  this.setScrollLeft = (left) => {
+    canvas.scrollLeft = left;
+  };
+
+  this.setScrollLeft(0);
   this.setCurrent(0);
 
   let canvasScrollTimerId = undefined;
@@ -35,27 +39,28 @@ export function Canvas(canvas, args) {
     const direction = 0 < left - start ? 'next' : left !== start ? 'prev' : false;
     if (! direction) return;
 
-    const step = (left - start) / 20;
+    const fps   = 1000 / 60;
+    const range = left - start;
+    if (0 === range) return;
+
+    const step = range / fps; // Scrolling volume per interval
+
     let beforeCanvasScrollLeft = start;
     canvas.style.scrollSnapType = 'none';
 
+    let count = 0;
     smoothScrollToTimerId = setInterval(
       () => {
-        canvas.scrollLeft = canvas.scrollLeft + step;
+        count += Math.abs(step);
+        this.setScrollLeft(canvas.scrollLeft + step);
 
-        if (
-          'next' === direction && left <= canvas.scrollLeft
-          || 'prev' === direction && left >= canvas.scrollLeft
-          || beforeCanvasScrollLeft === canvas.scrollLeft
-        ) {
+        if (Math.abs(range) <= count) {
           clearInterval(smoothScrollToTimerId);
           canvas.style.scrollSnapType = '';
-          canvas.scrollLeft = left;
+          this.setScrollLeft(left);
         }
-
-        beforeCanvasScrollLeft = canvas.scrollLeft;
       },
-      10
+      fps
     );
   };
 
@@ -84,7 +89,7 @@ export function Canvas(canvas, args) {
   );
 
   const scrollLock = (left) => {
-    canvas.scrollLeft = left;
+    this.setScrollLeft(left);
   };
 
   const updateCurrent = () => {
@@ -102,12 +107,10 @@ export function Canvas(canvas, args) {
       }
     );
 
-    const min        = Math.min(...slideRelXList);
-    const near       = slideRelXList.indexOf(min);
-    const nearSlide  = this.slides[ near ];
-    const nearSlideX = nearSlide.getBoundingClientRect().left;
+    const min  = Math.min(...slideRelXList);
+    const near = slideRelXList.indexOf(min);
 
-    this.setCurrent(nearSlide.getAttribute('data-id'));
+    this.getCurrent() !== near && this.setCurrent(near);
     scrollLock(canvas.scrollLeft + slideRelXList[ near ]);
   };
 
