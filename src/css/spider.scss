@@ -14,8 +14,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  scroll-snap-align: start;
-	flex: 1 0 100%;
+  scroll-snap-align: start !important;
+	flex: 1 0 100% !important;
   max-width: 100%;
 }
 

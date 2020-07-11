@@ -1,9 +1,14 @@
 export function DotsWrapper(dotsWrapper, args) {
-  this.updateCurrent = (index) => {
-    const oldDot = dotsWrapper.querySelector(`${ args.dot }[aria-current="true"]`);
-    const newDot = dotsWrapper.querySelector(`${ args.dot }[data-id="${ index }"]`);
-    !! oldDot && oldDot.setAttribute('aria-current', 'false');
-    !! newDot && newDot.setAttribute('aria-current', 'true');
+  this.updateCurrent = (ids) => {
+    const oldDots = dotsWrapper.querySelectorAll(`${ args.dot }[aria-current="true"]`);
+    oldDots.forEach((dot) => dot.setAttribute('aria-current', 'false'));
+
+    ids.forEach(
+     (id) => {
+       const dot = dotsWrapper.querySelector(`${ args.dot }[data-id="${ id }"]`);
+       dot.setAttribute('aria-current', 'true');
+     }
+    );
   };
 
   const createDot = (className, index) => {

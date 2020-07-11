@@ -84,16 +84,8 @@ const newSpider = (target, options) => {
         }
       );
 
-      const observerCallback = () => this.dotsWrapper.updateCurrent(this.canvas.getCurrent());
-      const observer = new MutationObserver(observerCallback);
-      observerCallback();
-      observer.observe(
-        canvas,
-        {
-          attributes: true,
-          attributeFilter: ['data-current']
-        }
-      );
+      this.dotsWrapper.updateCurrent(this.canvas.getActiveSlideIds());
+      canvas.addEventListener('updateActiveSlideIds', () => this.dotsWrapper.updateCurrent(this.canvas.getActiveSlideIds()), false);
     }
 
     target.setAttribute('data-initialized', 'true');

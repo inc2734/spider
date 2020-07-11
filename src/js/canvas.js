@@ -15,17 +15,6 @@ export function Canvas(canvas, args) {
     canvas.scrollLeft = left;
   };
 
-  this.setScrollLeft(0);
-  this.setCurrent(0);
-
-  let canvasScrollTimerId = undefined;
-
-  [].slice.call(this.slides).forEach(
-    (slide, index) => {
-      slide.setAttribute('data-id', index);
-    }
-  );
-
   /**
    * I'd really like to use this, but there are a lot of unsupported browsers, so I'll use an alternative code.
    *
@@ -48,9 +37,7 @@ export function Canvas(canvas, args) {
     let beforeCanvasScrollLeft = start;
     canvas.style.scrollSnapType = 'none';
 
-    const easeOutCirc = (x) => {
-      return Math.sqrt(1 - Math.pow(x - 1, 2));
-    };
+    const easeOutCirc = (x) => Math.sqrt(1 - Math.pow(x - 1, 2));
 
     let count = 0;
     smoothScrollToTimerId = setInterval(
@@ -92,6 +79,47 @@ export function Canvas(canvas, args) {
     }
   );
 
+  let activeSlideIds = [];
+  this.getActiveSlideIds = () => activeSlideIds;
+
+  /**
+   * If CSS is not applied, retry.
+   */
+  let updateActiveSlideIdsNumberOfRetrys = 10;
+  let updateActiveSlideIdsTimerId        = undefined;
+  const updateActiveSlideIds = () => {
+    clearTimeout(updateActiveSlideIdsTimerId);
+
+    const newActiveSlideIds = [];
+    const slideYChecker     = [];
+    const arrayUnique       = (array) => array.filter((value, index) => index === array.lastIndexOf(value));
+
+    const canvasLeft  = canvas.getBoundingClientRect().left;
+    const canvasRight = canvasLeft + canvas.offsetWidth;
+
+    [].slice.call(this.slides).forEach(
+      (slide, index) => {
+        const slideLeft = slide.getBoundingClientRect().left;
+
+        slideYChecker.push(slide.getBoundingClientRect().top);
+
+        if (canvasLeft <= slideLeft && canvasRight > slideLeft) {
+          newActiveSlideIds.push(slide.getAttribute('data-id'));
+        }
+      }
+    );
+
+    // If CSS is applied, the number of elements will be 1.
+    if (1 < arrayUnique(slideYChecker).length && 0 < updateActiveSlideIdsNumberOfRetrys) {
+      updateActiveSlideIdsTimerId = setTimeout(updateActiveSlideIds, 100);
+      updateActiveSlideIdsNumberOfRetrys --;
+      return;
+    }
+
+    activeSlideIds = newActiveSlideIds;
+    addCustomEvent(canvas, 'updateActiveSlideIds')
+  };
+
   const scrollLock = (left) => {
     this.setScrollLeft(left);
   };
@@ -118,6 +146,18 @@ export function Canvas(canvas, args) {
     scrollLock(canvas.scrollLeft + slideRelXList[ near ]);
   };
 
+  this.setScrollLeft(0);
+  this.setCurrent(0);
+
+  [].slice.call(this.slides).forEach(
+    (slide, index) => {
+      slide.setAttribute('data-id', index);
+    }
+  );
+
+  updateActiveSlideIds();
+
+  let canvasScrollTimerId = undefined;
   canvas.addEventListener(
     'scroll',
     () => {
@@ -131,6 +171,7 @@ export function Canvas(canvas, args) {
     'scrollEnd',
     () => {
       updateCurrent();
+      updateActiveSlideIds();
     },
     false
   );
