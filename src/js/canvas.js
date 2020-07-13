@@ -55,6 +55,13 @@ export function Canvas(canvas, args) {
     );
   };
 
+  const fade = (currentSlide) => {
+    const visibleSlides = canvas.querySelectorAll('[data-hidden="false"]');
+    [].slice.call(visibleSlides).forEach((slide) => slide.setAttribute('data-hidden', 'true'));
+
+    currentSlide.setAttribute('data-hidden', 'false');
+  };
+
   const observer = new MutationObserver(
     () => {
       const current      = this.getCurrent();
@@ -67,7 +74,11 @@ export function Canvas(canvas, args) {
       const canvasX          = canvas.getBoundingClientRect().left;
       const currentSlideRelX = currentSlideX - canvasX;
 
-      smoothScrollTo(canvas.scrollLeft + currentSlideRelX);
+      if (args.fade) {
+        fade(currentSlide);
+      } else {
+        smoothScrollTo(canvas.scrollLeft + currentSlideRelX);
+      }
     }
   );
 
@@ -117,6 +128,7 @@ export function Canvas(canvas, args) {
     }
 
     activeSlideIds = newActiveSlideIds;
+    console.log(activeSlideIds);
     addCustomEvent(canvas, 'updateActiveSlideIds')
   };
 
@@ -157,6 +169,30 @@ export function Canvas(canvas, args) {
 
   updateActiveSlideIds();
 
+  if (args.fade) {
+    const initFade = () => {
+      canvas.removeEventListener('updateActiveSlideIds', initFade, false);
+
+      const canvasX = canvas.getBoundingClientRect().left;
+      const canvasWidth = canvas.offsetWidth;
+
+      [].slice.call(this.slides).forEach(
+        (slide, index) => {
+          const slideX = slide.getBoundingClientRect().left;
+          const slideRelx = slideX - canvasX;
+
+          if (canvasWidth <= slideRelx) {
+            if (0 < index) {
+              slide.style.left = `${ index * 100 * -1 }%`;
+              slide.setAttribute('data-hidden', 'true');
+            }
+          }
+        }
+      );
+    };
+    canvas.addEventListener('updateActiveSlideIds', initFade, false);
+  }
+
   let canvasScrollTimerId = undefined;
   canvas.addEventListener(
     'scroll',
@@ -171,7 +207,7 @@ export function Canvas(canvas, args) {
     'scrollEnd',
     () => {
       updateCurrent();
-      updateActiveSlideIds();
+      updateActiveSlideIds(); // @todo fade のときはスクロールしないからこれが発火しない
     },
     false
   );

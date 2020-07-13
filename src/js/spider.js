@@ -38,6 +38,7 @@ const newSpider = (target, options) => {
       canvas,
       {
         slide: this.options.slide,
+        fade: 'true' === target.getAttribute('data-fade'),
       }
     );
 

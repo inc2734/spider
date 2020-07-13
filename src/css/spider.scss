@@ -32,6 +32,7 @@
 .spider__arrow {
   position: absolute;
   top: calc(50% - 24px);
+  z-index: 1;
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -98,4 +99,26 @@
 }
 .spider__dot[aria-current="true"] {
   background-color: #333;
+}
+
+[data-fade="true"] {
+  .spider__canvas {
+    position: relative !important;
+  }
+
+  .spider__slide {
+    position: relative !important;
+    max-width: 100% !important;
+    width: auto !important;
+    transition: opacity .2s ease-in, visibility .2s ease-in;
+
+    &[data-hidden="false"] {
+      z-index: 1;
+    }
+
+    &[data-hidden="true"] {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
 }
