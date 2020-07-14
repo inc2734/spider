@@ -1,20 +1,18 @@
 import addCustomEvent from '@inc2734/add-custom-event';
 
+import { Slide } from './slide';
+
 class abstractCanvas {
   constructor(canvas, args) {
     this.canvas = canvas;
     this.args   = args;
-    this.slides = this.canvas.querySelectorAll(this.args.slide);
+    this.slides = [].slice.call(this.canvas.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
 
     this.activeSlideIds = [];
     this.updateActiveSlideIdsNumberOfRetrys = 10;
     this.updateActiveSlideIdsTimerId = undefined;
 
-    [].slice.call(this.slides).forEach(
-      (slide, index) => {
-        slide.setAttribute('data-id', index);
-      }
-    );
+    this.slides.forEach((slide, index) => slide.setId(index));
 
     this.setCurrent(0);
     this.updateActiveSlideIds();
@@ -99,7 +97,7 @@ class abstractCanvas {
     clearTimeout(this.updateActiveSlideIdsTimerId);
 
     const arrayUnique   = (array) => array.filter((value, index) => index === array.lastIndexOf(value));
-    const slideYChecker = arrayUnique([].slice.call(this.slides).map((slide) => slide.getBoundingClientRect().top));
+    const slideYChecker = arrayUnique(this.slides.map((slide) => slide.top()));
 
     const newActiveSlideIds = this.getNewActiveSlideIds();
 
@@ -122,29 +120,26 @@ class FadeCanvas extends abstractCanvas {
     const initFade = () => {
       this.canvas.removeEventListener('updateActiveSlideIds', initFade, false);
 
-      [].slice.call(this.slides).forEach((slide) => slide.style.left = '');
+      this.slides.forEach((slide) => slide.style('left', ''));
 
-      [].slice.call(this.slides).forEach(
+      this.slides.forEach(
         (slide, index) => {
           const beforeSlide = this.slides[ index - 1 ];
           if (beforeSlide) {
-            const slideLeft        = slide.getBoundingClientRect().left;
-            const beforeSlideLeft  = beforeSlide.getBoundingClientRect().left;
-            const beforeSlideRight = beforeSlideLeft + slide.offsetWidth;
-            const canvasSpace      = this.right() - beforeSlideRight;
+            const canvasSpace = this.right() - (beforeSlide.left() + beforeSlide.offsetWidth());
 
-            if (0 <= canvasSpace && this.right() <= slideLeft) {
-              const distance               = this.right() - slideLeft;
+            if (0 <= canvasSpace && this.right() <= slide.left()) {
+              const distance               = this.right() - slide.left();
               const distancePerCanvasWidth = distance / this.offsetWidth();
               const spacePerCanvasWidth    = canvasSpace / this.offsetWidth();
               const newSlideLeft           = `${ (distancePerCanvasWidth + spacePerCanvasWidth) * 100 - 100 }%`;
 
-              slide.style.left = newSlideLeft;
-              slide.setAttribute('data-hidden', 'true');
+              slide.style('left', newSlideLeft);
+              slide.setHidden('true');
               return;
             }
           }
-          slide.setAttribute('data-hidden', 'false');
+          slide.setHidden('false');
         }
       );
     };
@@ -162,48 +157,44 @@ class FadeCanvas extends abstractCanvas {
   }
 
   moveTo(current) {
-    const currentSlide = this.canvas.querySelector(`[data-id="${ current }"]`);
+    const currentSlide = new Slide(this.canvas.querySelector(`[data-id="${ current }"]`));
     if (! currentSlide) {
       return;
     }
 
-    if ('false' === currentSlide.getAttribute('data-hidden')) {
+    if ('false' === currentSlide.getHidden()) {
       return;
     }
 
-    const visibleSlides   = this.canvas.querySelectorAll('[data-hidden="false"]');
-    const invisibleSlides = this.canvas.querySelectorAll('[data-hidden="true"]');
+    const visibleSlides   = [].slice.call(
+      this.canvas.querySelectorAll('[data-hidden="false"]')
+    ).map((slide) => new Slide(slide));
 
-    [].slice.call(visibleSlides).forEach((slide) => slide.setAttribute('data-hidden', 'true'));
-    currentSlide.setAttribute('data-hidden', 'false');
+    const invisibleSlides = [].slice.call(
+      this.canvas.querySelectorAll('[data-hidden="true"]')
+    ).map((slide) => new Slide(slide));
 
-    const prevInvisibleSlides = [].slice.call(invisibleSlides).reverse().filter(
-      (slide) => current > Number(slide.getAttribute('data-id'))
-    );
+    visibleSlides.forEach((slide) => slide.setHidden('true'));
+    currentSlide.setHidden('false');
 
-    const nextInvisibleSlides = [].slice.call(invisibleSlides).filter(
-      (slide) => current < Number(slide.getAttribute('data-id'))
-    );
-
-    const currentX = currentSlide.getBoundingClientRect().left;
+    const prevInvisibleSlides = invisibleSlides.concat().reverse().filter((slide) => current > slide.getId());
+    const nextInvisibleSlides = invisibleSlides.filter((slide) => current < slide.getId());
 
     prevInvisibleSlides.some(
       (slide, index) => {
-        const slideX = slide.getBoundingClientRect().left;
-        if (currentX <= slideX) {
+        if (currentSlide.left() <= slide.left()) {
           return true;
         }
-        slide.setAttribute('data-hidden', 'false');
+        slide.setHidden('false');
       }
     );
 
     nextInvisibleSlides.some(
       (slide, index) => {
-        const slideX = slide.getBoundingClientRect().left;
-        if (currentX >= slideX) {
+        if (currentSlide.left() >= slide.left()) {
           return true;
         }
-        slide.setAttribute('data-hidden', 'false');
+        slide.setHidden('false');
       }
     );
 
@@ -213,13 +204,13 @@ class FadeCanvas extends abstractCanvas {
   getNewActiveSlideIds() {
     const newActiveSlideIds = [];
 
-    [].slice.call(this.slides).forEach(
+    this.slides.forEach(
       (slide) => {
-        const slideHidden = slide.getAttribute('data-hidden');
-        const slideLeft   = slide.getBoundingClientRect().left;
-
-        if (null === slideHidden && this.left() <= slideLeft && this.right() > slideLeft || 'false' === slideHidden) {
-          newActiveSlideIds.push(slide.getAttribute('data-id'));
+        if (
+          null === slide.getHidden() && this.left() <= slide.left() && this.right() > slide.left()
+          || 'false' === slide.getHidden()
+        ) {
+          newActiveSlideIds.push(slide.getId());
         }
       }
     );
@@ -263,15 +254,13 @@ class SlideCanvas extends abstractCanvas {
    * @see https://developer.mozilla.org/ja/docs/Web/API/Element/scrollTo
    */
   moveTo(current) {
-    const currentSlide = this.canvas.querySelector(`[data-id="${ current }"]`);
+    const currentSlide = new Slide(this.canvas.querySelector(`[data-id="${ current }"]`));
     if (! currentSlide) {
       return;
     }
 
-    const start            = this.scrollLeft();
-    const currentSlideX    = currentSlide.getBoundingClientRect().left;
-    const currentSlideRelX = currentSlideX - this.left();;
-    const left             = start + currentSlideRelX;
+    const start = this.scrollLeft();
+    const left  = start + (currentSlide.left() - this.left());
 
     clearInterval(this.smoothScrollToTimerId);
 
@@ -308,12 +297,12 @@ class SlideCanvas extends abstractCanvas {
   getNewActiveSlideIds() {
     const newActiveSlideIds = [];
 
-    [].slice.call(this.slides).forEach(
+    this.slides.forEach(
       (slide) => {
-        const slideLeft = slide.getBoundingClientRect().left;
+        const slideLeft = slide.left();
 
         if (this.left() <= slideLeft && this.right() > slideLeft) {
-          newActiveSlideIds.push(slide.getAttribute('data-id'));
+          newActiveSlideIds.push(slide.getId());
         }
       }
     );
@@ -322,24 +311,23 @@ class SlideCanvas extends abstractCanvas {
   }
 
   updateCurrent() {
-    const slideRelXList = [];
+    const slideRelLeftList = [];
 
-    [].slice.call(this.slides).some(
+    this.slides.some(
       (slide, index) => {
-        const slideX    = slide.getBoundingClientRect().left;
-        const slideRelX = slideX - this.left();
-        slideRelXList[ index ] = Math.abs(slideRelX);
-        if (0 === slideRelX) {
+        const slideRelLeft = slide.left() - this.left();;
+        slideRelLeftList[ index ] = Math.abs(slideRelLeft);
+        if (0 === slideRelLeft) {
           return true;
         }
       }
     );
 
-    const min  = Math.min(...slideRelXList);
-    const near = slideRelXList.indexOf(min);
+    const min  = Math.min(...slideRelLeftList);
+    const near = slideRelLeftList.indexOf(min);
 
     this.getCurrent() !== near && this.setCurrent(near);
-    this.setScrollLeft(this.scrollLeft() + slideRelXList[ near ]);
+    this.setScrollLeft(this.scrollLeft() + slideRelLeftList[ near ]);
   }
 }
 
