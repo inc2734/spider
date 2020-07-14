@@ -21,6 +21,10 @@ const newSpiders = (sliders, options) => {
 };
 
 const newSpider = (target, options) => {
+  if ('true' === target.getAttribute('data-initialized')) {
+    return;
+  }
+
   const canvas = target.querySelector(options.canvas);
   if (! canvas) {
     return;
