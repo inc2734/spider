@@ -273,6 +273,50 @@ var spider = new Spider('#using-id-selector');
   &lt;/div&gt;
 &lt;/div&gt;</pre>
 
+  <h2>Thumbnail gallery</h2>
+  <div class="spider-container" id="thumbnail-gallery">
+    <div class="spider">
+      <div class="spider__canvas">
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/blue.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/green.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/orange.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/pink.jpg" alt="">
+        </div>
+        <div class="spider__slide">
+          <img class="spider__figure" src="img/purple.jpg" alt="">
+        </div>
+      </div>
+
+      <div class="spider__dots" data-thumbnails="true"></div>
+
+      <button class="spider__arrow" data-direction="prev">Prev</button>
+      <button class="spider__arrow" data-direction="next">Next</button>
+    </div>
+  </div>
+
+  <pre>&lt;div class="spider-container"&gt;
+  &lt;div class="spider"&gt;
+    &lt;div class="spider__canvas"&gt;
+      &lt;div class="spider__slide"&gt;
+        &lt;img class="spider__figure" src="img/blue.jpg" alt=""&gt;
+      &lt;/div&gt;
+      ...
+    &lt;/div&gt;
+
+    &lt;div class="spider__dots" data-thumbnails="true"&gt;&lt;/div&gt;
+
+    &lt;button class="spider__arrow" data-direction="prev"&gt;Prev&lt;/button&gt;
+    &lt;button class="spider__arrow" data-direction="next"&gt;Next&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+
   <p>
     GitHub: <a href="https://github.com/inc2734/spider">https://github.com/inc2734/spider</a>
   </p>

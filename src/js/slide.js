@@ -3,6 +3,8 @@ export function Slide(slide) {
     return;
   }
 
+  this.dom = slide;
+
   this.setId = (id) => {
     slide.setAttribute('data-id', id);
   };

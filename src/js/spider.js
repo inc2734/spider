@@ -83,14 +83,18 @@ const newSpider = (target, options) => {
       this.dotsWrapper = new DotsWrapper(
         dotsWrapper,
         {
-          numberOfSlides: this.canvas.slides.length,
+          slides: this.canvas.slides,
           dot: this.options.dot,
           handleClick: (event) => this.canvas.setCurrent(event.currentTarget.getAttribute('data-id')),
         }
       );
 
       this.dotsWrapper.updateCurrent(this.canvas.getActiveSlideIds());
-      canvas.addEventListener('updateActiveSlideIds', () => this.dotsWrapper.updateCurrent(this.canvas.getActiveSlideIds()), false);
+      canvas.addEventListener(
+        'updateActiveSlideIds',
+        () => this.dotsWrapper.updateCurrent(this.canvas.getActiveSlideIds()),
+        false
+      );
     }
 
     target.setAttribute('data-initialized', 'true');

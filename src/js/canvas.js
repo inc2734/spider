@@ -181,7 +181,7 @@ class FadeCanvas extends abstractCanvas {
     const nextInvisibleSlides = invisibleSlides.filter((slide) => current < slide.getId());
 
     prevInvisibleSlides.some(
-      (slide, index) => {
+      (slide) => {
         if (currentSlide.left() <= slide.left()) {
           return true;
         }
@@ -190,7 +190,7 @@ class FadeCanvas extends abstractCanvas {
     );
 
     nextInvisibleSlides.some(
-      (slide, index) => {
+      (slide) => {
         if (currentSlide.left() >= slide.left()) {
           return true;
         }
