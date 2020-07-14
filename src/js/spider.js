@@ -48,12 +48,26 @@ const newSpider = (target, options) => {
 
     this.prev = () => {
       const current = this.canvas.getCurrent();
-      0 < current && this.canvas.setCurrent(current - 1);
+      if (0 < current) {
+        const goto = current - 1;
+        this.canvas.setCurrent(goto);
+
+        if ('false' === this.canvas.slides[ goto ].getHidden()) {
+          this.prev();
+        }
+      }
     };
 
     this.next = () => {
       const current = this.canvas.getCurrent();
-      this.canvas.slides.length - 1 > current && this.canvas.setCurrent(current + 1)
+      if (this.canvas.slides.length - 1 > current) {
+        const goto = current + 1;
+        this.canvas.setCurrent(goto);
+
+        if ('false' === this.canvas.slides[ goto ].getHidden()) {
+          this.next();
+        }
+      }
     }
 
     this.moveTo = (index) => {

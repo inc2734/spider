@@ -9,6 +9,9 @@ class abstractCanvas {
     this.slides = [].slice.call(this.canvas.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
 
     this.activeSlideIds = [];
+    this.history = [];
+    this.historyActiveSlideIds = [];
+
     this.updateActiveSlideIdsNumberOfRetrys = 10;
     this.updateActiveSlideIdsTimerId = undefined;
 
@@ -35,13 +38,7 @@ class abstractCanvas {
 
     const observer = new MutationObserver(
       (mutation) => {
-        const current      = this.getCurrent();
-        const currentSlide = this.canvas.querySelector(`[data-id="${ current }"]`);
-        if (! currentSlide) {
-          return;
-        }
-
-        this.moveTo(current);
+        this.moveTo(this.getCurrent());
       }
     );
 
@@ -71,7 +68,9 @@ class abstractCanvas {
   }
 
   setCurrent(index) {
-    this.canvas.setAttribute('data-current', index);
+    const newCurrent = Number(index);
+    this.canvas.setAttribute('data-current', newCurrent);
+    this.history.push(newCurrent);
   }
 
   getCurrent() {
@@ -99,8 +98,6 @@ class abstractCanvas {
     const arrayUnique   = (array) => array.filter((value, index) => index === array.lastIndexOf(value));
     const slideYChecker = arrayUnique(this.slides.map((slide) => slide.top()));
 
-    const newActiveSlideIds = this.getNewActiveSlideIds();
-
     // If CSS is applied, the number of elements will be 1.
     if (1 < slideYChecker.length && 0 < this.updateActiveSlideIdsNumberOfRetrys) {
       this.updateActiveSlideIdsTimerId = setTimeout(() => this.updateActiveSlideIds(), 100);
@@ -108,8 +105,14 @@ class abstractCanvas {
       return;
     }
 
+    const newActiveSlideIds = this.getNewActiveSlideIds();
+    if (JSON.stringify(this.historyActiveSlideIds.slice(-1)[0]) === JSON.stringify(newActiveSlideIds)) {
+      return;
+    }
+
     this.activeSlideIds = newActiveSlideIds;
-    addCustomEvent(this.canvas, 'updateActiveSlideIds')
+    this.historyActiveSlideIds.push(newActiveSlideIds);
+    addCustomEvent(this.canvas, 'updateActiveSlideIds');
   }
 }
 
@@ -166,7 +169,7 @@ class FadeCanvas extends abstractCanvas {
       return;
     }
 
-    const visibleSlides   = [].slice.call(
+    const visibleSlides = [].slice.call(
       this.canvas.querySelectorAll('[data-hidden="false"]')
     ).map((slide) => new Slide(slide));
 
