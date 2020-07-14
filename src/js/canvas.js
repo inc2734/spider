@@ -12,13 +12,28 @@ class abstractCanvas {
     this.history = [];
     this.historyActiveSlideIds = [];
 
-    this.updateActiveSlideIdsNumberOfRetrys = 10;
-    this.updateActiveSlideIdsTimerId = undefined;
-
     this.slides.forEach((slide, index) => slide.setId(index));
 
+    // If CSS is applied, the number of elements will be 1.
+    let updateActiveSlideIdsNumberOfRetrys = 10;
+    let updateActiveSlideIdsTimerId = undefined;
+    const initActiveSlideIds = () => {
+      clearTimeout(updateActiveSlideIdsTimerId);
+
+      const arrayUnique   = (array) => array.filter((value, index) => index === array.lastIndexOf(value));
+      const slideYChecker = arrayUnique(this.slides.map((slide) => slide.top()));
+
+      if (1 < slideYChecker.length && 0 < updateActiveSlideIdsNumberOfRetrys) {
+        updateActiveSlideIdsTimerId = setTimeout(initActiveSlideIds, 100);
+        updateActiveSlideIdsNumberOfRetrys --;
+        return;
+      }
+
+      this.updateActiveSlideIds();
+    };
+
     this.setCurrent(0);
-    this.updateActiveSlideIds();
+    initActiveSlideIds();
 
     let resizeTimerId = undefined;
     window.addEventListener(
@@ -38,7 +53,11 @@ class abstractCanvas {
 
     const observer = new MutationObserver(
       (mutation) => {
-        this.moveTo(this.getCurrent());
+        const currentSlide = new Slide(this.canvas.querySelector(`[data-id="${ this.getCurrent() }"]`));
+        if (! currentSlide) {
+          return;
+        }
+        this.moveTo(currentSlide);
       }
     );
 
@@ -77,6 +96,10 @@ class abstractCanvas {
     return Number(this.canvas.getAttribute('data-current'));
   }
 
+  getSlide(index) {
+    return this.slides[ index ];
+  }
+
   getActiveSlideIds() {
     return this.activeSlideIds;
   }
@@ -93,18 +116,6 @@ class abstractCanvas {
    * If CSS is not applied, retry.
    */
   updateActiveSlideIds() {
-    clearTimeout(this.updateActiveSlideIdsTimerId);
-
-    const arrayUnique   = (array) => array.filter((value, index) => index === array.lastIndexOf(value));
-    const slideYChecker = arrayUnique(this.slides.map((slide) => slide.top()));
-
-    // If CSS is applied, the number of elements will be 1.
-    if (1 < slideYChecker.length && 0 < this.updateActiveSlideIdsNumberOfRetrys) {
-      this.updateActiveSlideIdsTimerId = setTimeout(() => this.updateActiveSlideIds(), 100);
-      this.updateActiveSlideIdsNumberOfRetrys --;
-      return;
-    }
-
     const newActiveSlideIds = this.getNewActiveSlideIds();
     if (JSON.stringify(this.historyActiveSlideIds.slice(-1)[0]) === JSON.stringify(newActiveSlideIds)) {
       return;
@@ -127,14 +138,18 @@ class FadeCanvas extends abstractCanvas {
 
       this.slides.forEach(
         (slide, index) => {
-          const beforeSlide = this.slides[ index - 1 ];
-          if (beforeSlide) {
-            const canvasSpace = this.right() - (beforeSlide.left() + beforeSlide.offsetWidth());
+          const canvasRight = this.right();
+          const canvasWidth = this.offsetWidth();
+          const beforeSlide = this.getSlide( index - 1 );
 
-            if (0 <= canvasSpace && this.right() <= slide.left()) {
-              const distance               = this.right() - slide.left();
-              const distancePerCanvasWidth = distance / this.offsetWidth();
-              const spacePerCanvasWidth    = canvasSpace / this.offsetWidth();
+          if (beforeSlide) {
+            const slideLeft   = slide.left();
+            const canvasSpace = canvasRight - (beforeSlide.left() + beforeSlide.offsetWidth());
+
+            if (0 <= canvasSpace && canvasRight <= slideLeft) {
+              const distance               = canvasRight - slideLeft;
+              const distancePerCanvasWidth = distance / canvasWidth;
+              const spacePerCanvasWidth    = canvasSpace / canvasWidth;
               const newSlideLeft           = `${ (distancePerCanvasWidth + spacePerCanvasWidth) * 100 - 100 }%`;
 
               slide.style('left', newSlideLeft);
@@ -159,12 +174,7 @@ class FadeCanvas extends abstractCanvas {
     );
   }
 
-  moveTo(current) {
-    const currentSlide = new Slide(this.canvas.querySelector(`[data-id="${ current }"]`));
-    if (! currentSlide) {
-      return;
-    }
-
+  moveTo(currentSlide) {
     if ('false' === currentSlide.getHidden()) {
       return;
     }
@@ -180,12 +190,15 @@ class FadeCanvas extends abstractCanvas {
     visibleSlides.forEach((slide) => slide.setHidden('true'));
     currentSlide.setHidden('false');
 
+    const current          = this.getCurrent();
+    const currentSlideLeft = currentSlide.left();
+
     const prevInvisibleSlides = invisibleSlides.concat().reverse().filter((slide) => current > slide.getId());
     const nextInvisibleSlides = invisibleSlides.filter((slide) => current < slide.getId());
 
     prevInvisibleSlides.some(
       (slide) => {
-        if (currentSlide.left() <= slide.left()) {
+        if (currentSlideLeft <= slide.left()) {
           return true;
         }
         slide.setHidden('false');
@@ -194,7 +207,7 @@ class FadeCanvas extends abstractCanvas {
 
     nextInvisibleSlides.some(
       (slide) => {
-        if (currentSlide.left() >= slide.left()) {
+        if (currentSlideLeft >= slide.left()) {
           return true;
         }
         slide.setHidden('false');
@@ -206,11 +219,14 @@ class FadeCanvas extends abstractCanvas {
 
   getNewActiveSlideIds() {
     const newActiveSlideIds = [];
+    const canvasLeft  = this.left();
+    const canvasRight = this.right();
 
     this.slides.forEach(
       (slide) => {
+        const slideLeft = slide.left();
         if (
-          null === slide.getHidden() && this.left() <= slide.left() && this.right() > slide.left()
+          null === slide.getHidden() && canvasLeft <= slideLeft && canvasRight > slideLeft
           || 'false' === slide.getHidden()
         ) {
           newActiveSlideIds.push(slide.getId());
@@ -256,12 +272,7 @@ class SlideCanvas extends abstractCanvas {
    *
    * @see https://developer.mozilla.org/ja/docs/Web/API/Element/scrollTo
    */
-  moveTo(current) {
-    const currentSlide = new Slide(this.canvas.querySelector(`[data-id="${ current }"]`));
-    if (! currentSlide) {
-      return;
-    }
-
+  moveTo(currentSlide) {
     const start = this.scrollLeft();
     const left  = start + (currentSlide.left() - this.left());
 
@@ -299,12 +310,14 @@ class SlideCanvas extends abstractCanvas {
 
   getNewActiveSlideIds() {
     const newActiveSlideIds = [];
+    const canvasLeft  = this.left();
+    const canvasRight = this.right();
 
     this.slides.forEach(
       (slide) => {
         const slideLeft = slide.left();
 
-        if (this.left() <= slideLeft && this.right() > slideLeft) {
+        if (canvasLeft <= slideLeft && canvasRight > slideLeft) {
           newActiveSlideIds.push(slide.getId());
         }
       }
@@ -315,10 +328,11 @@ class SlideCanvas extends abstractCanvas {
 
   updateCurrent() {
     const slideRelLeftList = [];
+    const canvasLeft = this.left();
 
     this.slides.some(
       (slide, index) => {
-        const slideRelLeft = slide.left() - this.left();;
+        const slideRelLeft = slide.left() - canvasLeft;
         slideRelLeftList[ index ] = Math.abs(slideRelLeft);
         if (0 === slideRelLeft) {
           return true;
