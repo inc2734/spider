@@ -35,21 +35,9 @@ class abstractCanvas {
     this.setCurrent(0);
     initActiveSlideIds();
 
-    let resizeTimerId = undefined;
-    window.addEventListener(
-      'resize',
-      () => {
-        clearTimeout(resizeTimerId);
-        resizeTimerId = setTimeout(
-          () => {
-            this.setCurrent(0);
-            this.updateActiveSlideIds();
-          },
-          250
-        );
-      },
-      false
-    );
+    this.resizeTimerId = undefined;
+    this.handleResize = this.handleResize.bind(this);
+    window.addEventListener('resize', this.handleResize, false);
 
     const observer = new MutationObserver(
       (mutation) => {
@@ -67,6 +55,17 @@ class abstractCanvas {
         attributes: true,
         attributeFilter: ['data-current']
       }
+    );
+  }
+
+  handleResize() {
+    clearTimeout(this.resizeTimerId);
+    this.resizeTimerId = setTimeout(
+      () => {
+        this.setCurrent(0);
+        this.updateActiveSlideIds();
+      },
+      250
     );
   }
 
@@ -131,46 +130,39 @@ class FadeCanvas extends abstractCanvas {
   constructor(canvas, args) {
     super(canvas, args);
 
-    const initFade = () => {
-      this.canvas.removeEventListener('updateActiveSlideIds', initFade, false);
+    this.initFade = this.initFade.bind(this);
+    this.canvas.addEventListener('updateActiveSlideIds', this.initFade, false);
+    window.addEventListener('resize', this.initFade, false);
+  }
 
-      this.slides.forEach((slide) => slide.style('left', ''));
+  initFade() {
+    this.canvas.removeEventListener('updateActiveSlideIds', this.initFade, false);
 
-      this.slides.forEach(
-        (slide, index) => {
-          const canvasRight = this.right();
-          const canvasWidth = this.offsetWidth();
-          const beforeSlide = this.getSlide( index - 1 );
+    this.slides.forEach((slide) => slide.style('left', ''));
 
-          if (beforeSlide) {
-            const slideLeft   = slide.left();
-            const canvasSpace = canvasRight - (beforeSlide.left() + beforeSlide.offsetWidth());
+    this.slides.forEach(
+      (slide, index) => {
+        const canvasRight = this.right();
+        const canvasWidth = this.offsetWidth();
+        const beforeSlide = this.getSlide( index - 1 );
 
-            if (0 <= canvasSpace && canvasRight <= slideLeft) {
-              const distance               = canvasRight - slideLeft;
-              const distancePerCanvasWidth = distance / canvasWidth;
-              const spacePerCanvasWidth    = canvasSpace / canvasWidth;
-              const newSlideLeft           = `${ (distancePerCanvasWidth + spacePerCanvasWidth) * 100 - 100 }%`;
+        if (beforeSlide) {
+          const slideLeft   = slide.left();
+          const canvasSpace = canvasRight - (beforeSlide.left() + beforeSlide.offsetWidth());
 
-              slide.style('left', newSlideLeft);
-              slide.setHidden('true');
-              return;
-            }
+          if (0 <= canvasSpace && canvasRight <= slideLeft) {
+            const distance               = canvasRight - slideLeft;
+            const distancePerCanvasWidth = distance / canvasWidth;
+            const spacePerCanvasWidth    = canvasSpace / canvasWidth;
+            const newSlideLeft           = `${ (distancePerCanvasWidth + spacePerCanvasWidth) * 100 - 100 }%`;
+
+            slide.style('left', newSlideLeft);
+            slide.setHidden('true');
+            return;
           }
-          slide.setHidden('false');
         }
-      );
-    };
-
-    this.canvas.addEventListener('updateActiveSlideIds', initFade, false);
-    window.addEventListener('resize', initFade, false);
-
-    this.canvas.addEventListener(
-      'fadeEnd',
-      () => {
-        this.updateActiveSlideIds();
-      },
-      false
+        slide.setHidden('false');
+      }
     );
   }
 
@@ -214,17 +206,18 @@ class FadeCanvas extends abstractCanvas {
       }
     );
 
+    this.updateActiveSlideIds();
     addCustomEvent(this.canvas, 'fadeEnd');
   }
 
   getNewActiveSlideIds() {
     const newActiveSlideIds = [];
-    const canvasLeft  = this.left();
-    const canvasRight = this.right();
+    const canvasLeft  = Math.round(this.left());
+    const canvasRight = Math.round(this.right());
 
     this.slides.forEach(
       (slide) => {
-        const slideLeft = slide.left();
+        const slideLeft = Math.round(slide.left());
         if (
           null === slide.getHidden() && canvasLeft <= slideLeft && canvasRight > slideLeft
           || 'false' === slide.getHidden()
@@ -248,23 +241,43 @@ class SlideCanvas extends abstractCanvas {
     this.setScrollLeft = (left) => this.canvas.scrollLeft = left;
     this.setScrollLeft(0);
 
-    this.canvas.addEventListener(
-      'scroll',
+    this.handleScroll = this.handleScroll.bind(this);
+    this.canvas.addEventListener('scroll', this.handleScroll, false);
+  }
+
+  handleScroll() {
+    clearTimeout(this.canvasScrollTimerId);
+
+    this.canvasScrollTimerId = setTimeout(
       () => {
-        clearTimeout(this.canvasScrollTimerId);
-        this.canvasScrollTimerId = setTimeout(() => addCustomEvent(this.canvas, 'scrollEnd'), 100);
+        this.scrollLock();
+        this.updateActiveSlideIds();
+        addCustomEvent(this.canvas, 'scrollEnd');
       },
-      false
+      250
+    );
+  }
+
+  scrollLock() {
+    const slideRelLeftList = [];
+    const canvasLeft = this.left();
+
+    this.slides.some(
+      (slide, index) => {
+        const slideRelLeft = slide.left() - canvasLeft;
+        slideRelLeftList[ index ] = Math.floor(Math.abs(slideRelLeft));
+        if (0 === slideRelLeft) {
+          return true;
+        }
+      }
     );
 
-    this.canvas.addEventListener(
-      'scrollEnd',
-      () => {
-        this.updateCurrent();
-        this.updateActiveSlideIds();
-      },
-      false
-    );
+    const min  = Math.min(...slideRelLeftList);
+    const near = slideRelLeftList.indexOf(min);
+
+    if (this.getCurrent() !== near) {
+      this.setCurrent(near);
+    }
   }
 
   /**
@@ -310,12 +323,12 @@ class SlideCanvas extends abstractCanvas {
 
   getNewActiveSlideIds() {
     const newActiveSlideIds = [];
-    const canvasLeft  = this.left();
-    const canvasRight = this.right();
+    const canvasLeft  = Math.round(this.left());
+    const canvasRight = Math.round(this.right());
 
     this.slides.forEach(
       (slide) => {
-        const slideLeft = slide.left();
+        const slideLeft = Math.round(slide.left());
 
         if (canvasLeft <= slideLeft && canvasRight > slideLeft) {
           newActiveSlideIds.push(slide.getId());
@@ -324,27 +337,6 @@ class SlideCanvas extends abstractCanvas {
     );
 
     return newActiveSlideIds;
-  }
-
-  updateCurrent() {
-    const slideRelLeftList = [];
-    const canvasLeft = this.left();
-
-    this.slides.some(
-      (slide, index) => {
-        const slideRelLeft = slide.left() - canvasLeft;
-        slideRelLeftList[ index ] = Math.abs(slideRelLeft);
-        if (0 === slideRelLeft) {
-          return true;
-        }
-      }
-    );
-
-    const min  = Math.min(...slideRelLeftList);
-    const near = slideRelLeftList.indexOf(min);
-
-    this.getCurrent() !== near && this.setCurrent(near);
-    this.setScrollLeft(this.scrollLeft() + slideRelLeftList[ near ]);
   }
 }
 
