@@ -73,11 +73,11 @@ or
       </div>
     </div>
 
-    <div class="spider__dots"></div>
-
     <button class="spider__arrow" data-direction="prev">Prev</button>
     <button class="spider__arrow" data-direction="next">Next</button>
   </div>
+
+  <div class="spider__dots"></div>
 </div>
 ```
 
