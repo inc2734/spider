@@ -1,6 +1,6 @@
 {
   "name": "@inc2734/spider",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "inc2734",
   "license": "MIT",
   "repository": {
@@ -15,27 +15,27 @@
     "README.md"
   ],
   "devDependencies": {
-    "@babel/core": "^7.10.4",
+    "@babel/core": "^7.10.5",
     "@babel/preset-env": "^7.10.4",
     "@inc2734/add-custom-event": "^0.5.0",
-    "@rollup/plugin-babel": "^5.0.4",
-    "@rollup/plugin-node-resolve": "^8.1.0",
+    "@rollup/plugin-babel": "^5.1.0",
+    "@rollup/plugin-node-resolve": "^8.4.0",
     "@wordpress/browserslist-config": "^2.7.0",
-    "autoprefixer": "^9.8.4",
+    "autoprefixer": "^9.8.5",
     "browserslist": "^4.13.0",
     "cssnano": "^4.1.10",
     "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "postcss-cli": "^7.1.1",
     "rimraf": "^3.0.2",
-    "rollup": "^2.21.0",
+    "rollup": "^2.23.0",
     "rollup-plugin-uglify": "^6.0.4"
   },
   "scripts": {
     "start": "npm run build",
     "clean:js": "rimraf dist/js && mkdir -p dist/js",
     "clean:css": "rimraf dist/css && mkdir -p dist/css",
-    "js": "npm run clean:css && rollup -c",
+    "js": "npm run clean:js && rollup -c",
     "css": "npm run clean:js && node-sass src/css/spider.scss dist/css/spider.css && postcss -r dist/css/spider.css -c=postcss.config.js",
     "docs:clean:js": "rimraf docs/dist/js && mkdir -p docs/dist/js",
     "docs:clean:css": "rimraf docs/dist/css && mkdir -p docs/dist/css",
