@@ -295,7 +295,7 @@ class SlideCanvas extends abstractCanvas {
     if (! direction) return;
 
     const fps   = 1000 / 60;
-    const range = left - start;
+    const range = Math.round(left - start);
     if (0 === range) return;
 
     const step = range / fps; // Scrolling volume per interval

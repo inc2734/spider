@@ -22,6 +22,7 @@
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@wordpress/browserslist-config": "^2.7.0",
     "autoprefixer": "^9.8.5",
+    "browser-sync": "^2.26.12",
     "browserslist": "^4.13.0",
     "cssnano": "^4.1.10",
     "node-sass": "^4.14.1",
