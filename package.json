@@ -46,7 +46,7 @@
     "docs:css": "npm-run-all -p docs:css:*",
     "docs": "npm-run-all -p docs:js docs:css",
     "build": "npm-run-all -p css js docs",
-    "server": "browser-sync start --server 'docs' --index 'index-next.html' --files 'docs'"
+    "server": "browser-sync start --server 'docs' --index 'index.html' --files 'docs'"
   },
   "dependencies": {}
 }

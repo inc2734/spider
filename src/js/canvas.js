@@ -12,8 +12,6 @@ class abstractCanvas {
     this.history = [];
     this.historyActiveSlideIds = [];
 
-    this.slides.forEach((slide, index) => slide.setId(index));
-
     // If CSS is applied, the number of elements will be 1.
     let updateActiveSlideIdsNumberOfRetrys = 10;
     let updateActiveSlideIdsTimerId = undefined;
@@ -41,10 +39,16 @@ class abstractCanvas {
 
     const observer = new MutationObserver(
       (mutation) => {
-        const currentSlide = new Slide(this.canvas.querySelector(`[data-id="${ this.getCurrent() }"]`));
+        const currentSlideDom = this.canvas.querySelector(`[data-id="${ this.getCurrent() }"]`);
+        if (! currentSlideDom) {
+          return;
+        }
+
+        const currentSlide = new Slide(currentSlideDom);
         if (! currentSlide) {
           return;
         }
+
         this.moveTo(currentSlide);
       }
     );
@@ -131,13 +135,11 @@ class FadeCanvas extends abstractCanvas {
     super(canvas, args);
 
     this.initFade = this.initFade.bind(this);
-    this.canvas.addEventListener('updateActiveSlideIds', this.initFade, false);
+    this.initFade();
     window.addEventListener('resize', this.initFade, false);
   }
 
   initFade() {
-    this.canvas.removeEventListener('updateActiveSlideIds', this.initFade, false);
-
     this.slides.forEach((slide) => slide.style('left', ''));
 
     this.slides.forEach(
@@ -250,34 +252,25 @@ class SlideCanvas extends abstractCanvas {
 
     this.canvasScrollTimerId = setTimeout(
       () => {
-        this.scrollLock();
         this.updateActiveSlideIds();
+        this.setCurrentForWheel();
         addCustomEvent(this.canvas, 'scrollEnd');
       },
       250
     );
   }
 
-  scrollLock() {
-    const slideRelLeftList = [];
+  setCurrentForWheel() {
     const canvasLeft = this.left();
-
     this.slides.some(
       (slide, index) => {
-        const slideRelLeft = slide.left() - canvasLeft;
-        slideRelLeftList[ index ] = Math.floor(Math.abs(slideRelLeft));
+        const slideRelLeft = Math.round(Math.abs(slide.left() - canvasLeft));
         if (0 === slideRelLeft) {
+          this.setCurrent(slide.getId());
           return true;
         }
       }
     );
-
-    const min  = Math.min(...slideRelLeftList);
-    const near = slideRelLeftList.indexOf(min);
-
-    if (this.getCurrent() !== near) {
-      this.setCurrent(near);
-    }
   }
 
   /**

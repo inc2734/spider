@@ -5,10 +5,6 @@ export function Slide(slide) {
 
   this.dom = slide;
 
-  this.setId = (id) => {
-    slide.setAttribute('data-id', id);
-  };
-
   this.getId = () => {
     return Number(slide.getAttribute('data-id'));
   };
