@@ -152,11 +152,12 @@ class FadeCanvas extends abstractCanvas {
           const slideLeft   = slide.left();
           const canvasSpace = canvasRight - (beforeSlide.left() + beforeSlide.offsetWidth());
 
-          if (0 <= canvasSpace && canvasRight <= slideLeft) {
+          if (canvasRight <= slideLeft) {
             const distance               = canvasRight - slideLeft;
             const distancePerCanvasWidth = distance / canvasWidth;
             const spacePerCanvasWidth    = canvasSpace / canvasWidth;
-            const newSlideLeft           = `${ (distancePerCanvasWidth + spacePerCanvasWidth) * 100 - 100 }%`;
+            const diffPercent            = distancePerCanvasWidth + spacePerCanvasWidth - 1;
+            const newSlideLeft           = `${ (diffPercent * canvasWidth) }px`;
 
             slide.style('left', newSlideLeft);
             slide.setHidden('true');
