@@ -1,4 +1,4 @@
-export function PrevArrow(prevArrow, args) {
-  prevArrow.addEventListener('click', () => args.handleClick(), false);
+export function PrevArrow(target, args) {
+  target.addEventListener('click', () => args.handleClick(), false);
   return this;
 }

@@ -3,7 +3,7 @@ import addCustomEvent from '@inc2734/add-custom-event';
 import { Canvas } from './canvas';
 import { PrevArrow } from './prev-arrow';
 import { NextArrow } from './next-arrow';
-import { DotsWrapper } from './dots-wrapper';
+import { Dot } from './dot';
 
 const newSpiders = (sliders, options) => {
   const spiders = [];
@@ -11,7 +11,7 @@ const newSpiders = (sliders, options) => {
   [].slice.call(sliders).forEach(
     (slider) => {
       const spider = new Spider(slider, options);
-      if (!! spider) {
+      if (!! spider.initialized) {
         spiders.push(spider);
       }
     }
@@ -21,99 +21,133 @@ const newSpiders = (sliders, options) => {
 };
 
 const newSpider = (target, options) => {
-  if ('true' === target.getAttribute('data-initialized')) {
-    return;
-  }
-
-  const canvas = target.querySelector(options.canvas);
-  if (! canvas) {
-    return;
-  }
-
-  const prevArrow   = target.querySelector(options.prevArrow);
-  const nextArrow   = target.querySelector(options.nextArrow);
-  const dotsWrapper = target.querySelector(options.dotsWrapper);
-
   return new function() {
-    this.target  = target
-    this.options = options;
+    const _clonedTarget = target.cloneNode(true);
 
-    this.canvas = new Canvas(
-      canvas,
-      {
-        slide: this.options.slide,
-        fade: 'true' === target.getAttribute('data-fade'),
+    let canvas    = undefined;
+    let prevArrow = undefined;
+    let nextArrow = undefined;
+    let dots      = undefined;
+
+    this.initialized = false;
+
+    this.destroy = () => {
+      const _clone = _clonedTarget.cloneNode(true);
+      target.parentNode.insertBefore(_clone, target);
+      target.remove();
+      target = _clone;
+      this.initialized = false;
+    };
+
+    this.init = () => {
+      if (this.initialized) {
+        return;
       }
-    );
+
+      const _canvas = target.querySelector(options.canvas);
+      if (! _canvas) {
+        return;
+      }
+
+      const _prevArrow = target.querySelector(options.prevArrow);
+      const _nextArrow = target.querySelector(options.nextArrow);
+      const _dots      = target.querySelectorAll(options.dot);
+
+      if (!! _prevArrow) {
+        prevArrow = new PrevArrow(
+          _prevArrow,
+          {
+            handleClick: this.prev,
+          }
+        );
+      }
+
+      if (!! _nextArrow) {
+        nextArrow = new NextArrow(
+          _nextArrow,
+          {
+            handleClick: this.next,
+          }
+        );
+      }
+
+      if (0 < _dots.length) {
+        [].slice.call(_dots).forEach(
+          (_dot) => {
+            const dot = new Dot(
+              _dot,
+              {
+                handleClick: (event) => canvas.setCurrent(event.currentTarget.getAttribute('data-id')),
+              }
+            );
+
+            const observer = new MutationObserver(
+              (mutation) => {
+                dot.updateCurrent(canvas.getActiveSlideIds());
+              }
+            );
+
+            observer.observe(
+              _canvas,
+              {
+                attributes: true,
+                attributeFilter: ['data-animating']
+              }
+            );
+          }
+        );
+      }
+
+      canvas = new Canvas(
+        _canvas,
+        {
+          slide: options.slide,
+          fade: 'true' === target.getAttribute('data-fade'),
+        }
+      );
+
+      this.initialized = true;
+      target.setAttribute('data-initialized', 'true');
+      addCustomEvent(target, 'initialized');
+    };
 
     this.prev = () => {
-      const current = this.canvas.getCurrent();
+      const current = !! canvas && canvas.getCurrent();
+      if (false === current) {
+        return;
+      }
 
       if (0 < current) {
         const goto = current - 1;
-        this.canvas.setCurrent(goto);
+        canvas.setCurrent(goto);
 
-        if ('false' === this.canvas.getSlide(goto).getHidden()) {
+        if ('false' === canvas.getSlide(goto).getHidden()) {
           this.prev();
         }
       }
     };
 
     this.next = () => {
-      const current = this.canvas.getCurrent();
+      const current = !! canvas && canvas.getCurrent();
+      if (false === current) {
+        return;
+      }
 
-      if (this.canvas.slides.length - 1 > current) {
+      if (canvas.slides.length - 1 > current) {
         const goto = current + 1;
-        this.canvas.setCurrent(goto);
+        canvas.setCurrent(goto);
 
-        if ('false' === this.canvas.getSlide(goto).getHidden()) {
+        if ('false' === canvas.getSlide(goto).getHidden()) {
           this.next();
         }
       }
     }
 
     this.moveTo = (index) => {
-      !! this.canvas.getSlide(index) && this.canvas.setCurrent(index);
+      !! canvas && !! canvas.getSlide(index) && canvas.setCurrent(index);
     };
 
-    if (prevArrow) {
-      this.prevArrow = new PrevArrow(
-        prevArrow,
-        {
-          handleClick: this.prev,
-        }
-      );
-    }
-
-    if (nextArrow) {
-      this.nextArrow = new NextArrow(
-        nextArrow,
-        {
-          handleClick: this.next,
-        }
-      );
-    }
-
-    if (dotsWrapper) {
-      this.dotsWrapper = new DotsWrapper(
-        dotsWrapper,
-        {
-          slides: this.canvas.slides,
-          dot: this.options.dot,
-          handleClick: (event) => this.canvas.setCurrent(event.currentTarget.getAttribute('data-id')),
-        }
-      );
-
-      this.dotsWrapper.updateCurrent(this.canvas.getActiveSlideIds());
-      canvas.addEventListener(
-        'updateActiveSlideIds',
-        () => this.dotsWrapper.updateCurrent(this.canvas.getActiveSlideIds()),
-        false
-      );
-    }
-
-    target.setAttribute('data-initialized', 'true');
-    addCustomEvent(target, 'initialized');
+    this.init();
     return this;
   }
 };
@@ -128,7 +162,6 @@ export default function Spider(target, args = {}) {
     slide: '.spider__slide',
     prevArrow: '.spider__arrow[data-direction="prev"]',
     nextArrow: '.spider__arrow[data-direction="next"]',
-    dotsWrapper: '.spider__dots',
     dot: '.spider__dot',
   };
 

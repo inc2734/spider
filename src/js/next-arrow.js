@@ -1,4 +1,4 @@
-export function NextArrow(nextArrow, args) {
-  nextArrow.addEventListener('click', () => args.handleClick(), false);
+export function NextArrow(target, args) {
+  target.addEventListener('click', () => args.handleClick(), false);
   return this;
 }

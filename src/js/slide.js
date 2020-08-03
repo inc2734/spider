@@ -1,35 +1,35 @@
-export function Slide(slide) {
-  if (! slide) {
+export function Slide(target) {
+  if (! target) {
     return;
   }
 
-  this.dom = slide;
+  this.dom = target;
 
   this.getId = () => {
-    return Number(slide.getAttribute('data-id'));
+    return Number(target.getAttribute('data-id'));
   };
 
   this.top = () => {
-    return slide.getBoundingClientRect().top;
+    return target.getBoundingClientRect().top;
   };
 
   this.left = () => {
-    return slide.getBoundingClientRect().left;
+    return target.getBoundingClientRect().left;
   };
 
   this.offsetWidth = () => {
-    return slide.offsetWidth;
+    return target.offsetWidth;
   };
 
   this.style = (property, value) => {
-    slide.style[ property ] = value;
+    target.style[ property ] = value;
   };
 
   this.setHidden = (hidden) => {
-    slide.setAttribute('data-hidden', hidden);
+    target.setAttribute('data-hidden', hidden);
   };
 
   this.getHidden = () => {
-    return slide.getAttribute('data-hidden');
+    return target.getAttribute('data-hidden');
   }
 }

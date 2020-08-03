@@ -28,9 +28,12 @@ class abstractCanvas {
       }
 
       this.updateActiveSlideIds();
+      this.setAnimating(false);
+      this.initHook();
     };
 
     this.setCurrent(0);
+    this.setAnimating(true);
     initActiveSlideIds();
 
     this.resizeTimerId = undefined;
@@ -38,13 +41,13 @@ class abstractCanvas {
     window.addEventListener('resize', this.handleResize, false);
 
     const observer = new MutationObserver(
-      (mutation) => {
+      () => {
         const currentSlideDom = this.canvas.querySelector(`[data-id="${ this.getCurrent() }"]`);
         if (! currentSlideDom) {
           return;
         }
 
-        const currentSlide = new Slide(currentSlideDom);
+        const currentSlide = this.slides[ this.getCurrent() ];
         if (! currentSlide) {
           return;
         }
@@ -107,6 +110,15 @@ class abstractCanvas {
     return this.activeSlideIds;
   }
 
+  setAnimating(animating) {
+    const newAnimating = animating ? 'true' : 'false';
+    this.canvas.setAttribute('data-animating', newAnimating);
+  }
+
+  getAnimating() {
+    return 'true' === this.canvas.getAttribute('data-animating');
+  }
+
   moveTo(current) {
     throw new Error('abstractCanvas.moveTo is abstract method. Override it with the child class.');
   }
@@ -115,18 +127,20 @@ class abstractCanvas {
     throw new Error('abstractCanvas.moveTo is abstract method. Override it with the child class.');
   }
 
+  initHook() {}
+
   /**
    * If CSS is not applied, retry.
    */
   updateActiveSlideIds() {
     const newActiveSlideIds = this.getNewActiveSlideIds();
-    if (JSON.stringify(this.historyActiveSlideIds.slice(-1)[0]) === JSON.stringify(newActiveSlideIds)) {
+    const jsonNewActiveSlideIds = JSON.stringify(newActiveSlideIds);
+    if (JSON.stringify(this.historyActiveSlideIds.slice(-1)[0]) === jsonNewActiveSlideIds) {
       return;
     }
 
     this.activeSlideIds = newActiveSlideIds;
     this.historyActiveSlideIds.push(newActiveSlideIds);
-    addCustomEvent(this.canvas, 'updateActiveSlideIds');
   }
 }
 
@@ -134,12 +148,11 @@ class FadeCanvas extends abstractCanvas {
   constructor(canvas, args) {
     super(canvas, args);
 
-    this.initFade = this.initFade.bind(this);
-    this.initFade();
-    window.addEventListener('resize', this.initFade, false);
+    this.initHook = this.initHook.bind(this);
+    window.addEventListener('resize', this.initHook, false);
   }
 
-  initFade() {
+  initHook() {
     this.slides.forEach((slide) => slide.style('left', ''));
 
     this.slides.forEach(
@@ -173,6 +186,14 @@ class FadeCanvas extends abstractCanvas {
     if ('false' === currentSlide.getHidden()) {
       return;
     }
+
+    this.setAnimating(true);
+    const handleTransitionend = () => {
+      currentSlide.dom.removeEventListener('transitionend', handleTransitionend, false);
+      this.setAnimating(false);
+      addCustomEvent(this.canvas, 'fadeEnd');
+    };
+    currentSlide.dom.addEventListener('transitionend', handleTransitionend, false);
 
     const visibleSlides = [].slice.call(
       this.canvas.querySelectorAll('[data-hidden="false"]')
@@ -210,7 +231,6 @@ class FadeCanvas extends abstractCanvas {
     );
 
     this.updateActiveSlideIds();
-    addCustomEvent(this.canvas, 'fadeEnd');
   }
 
   getNewActiveSlideIds() {
@@ -250,11 +270,13 @@ class SlideCanvas extends abstractCanvas {
 
   handleScroll() {
     clearTimeout(this.canvasScrollTimerId);
+    this.setAnimating(true);
 
     this.canvasScrollTimerId = setTimeout(
       () => {
         this.updateActiveSlideIds();
         this.setCurrentForWheel();
+        this.setAnimating(false);
         addCustomEvent(this.canvas, 'scrollEnd');
       },
       250

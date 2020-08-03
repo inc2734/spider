@@ -36,8 +36,8 @@
   background-color: transparent;
   border: none;
   border-radius: 0;
-  font-size: 0;
-  line-height: 0;
+  font-size: 0 !important;
+  line-height: 0 !important;
   height: 42px;
   width: 42px;
   padding: 0;
