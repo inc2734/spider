@@ -2,47 +2,44 @@ import addCustomEvent from '@inc2734/add-custom-event';
 
 import { Slide } from './slide';
 
-class abstractCanvas {
-  constructor(canvas, args) {
-    this.canvas = canvas;
-    this.args   = args;
-    this.slides = [].slice.call(this.canvas.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
+const abstractMethodOverrideError = (methodName) => {
+  throw new Error(`${ methodName } is abstract method. Override it with the child class.`);
+};
 
-    this.activeSlideIds = [];
-    this.history = [];
+class abstractCanvas {
+  constructor(target, args) {
+    this.target = target;
+    this.args   = args;
+    this.slides = [].slice.call(this.target.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
     this.historyActiveSlideIds = [];
 
     // If CSS is applied, the number of elements will be 1.
-    let updateActiveSlideIdsNumberOfRetrys = 10;
-    let updateActiveSlideIdsTimerId = undefined;
-    const initActiveSlideIds = () => {
-      clearTimeout(updateActiveSlideIdsTimerId);
+    let initNumberOfRetrys = 10;
+    let initTimerId = undefined;
+    const init = () => {
+      clearTimeout(initTimerId);
 
       const arrayUnique   = (array) => array.filter((value, index) => index === array.lastIndexOf(value));
       const slideYChecker = arrayUnique(this.slides.map((slide) => slide.top()));
 
-      if (1 < slideYChecker.length && 0 < updateActiveSlideIdsNumberOfRetrys) {
-        updateActiveSlideIdsTimerId = setTimeout(initActiveSlideIds, 100);
-        updateActiveSlideIdsNumberOfRetrys --;
+      if (1 < slideYChecker.length && 0 < initNumberOfRetrys) {
+        initTimerId = setTimeout(init, 100);
+        initNumberOfRetrys --;
         return;
       }
 
+      this.beforeInit();
+      this.setCurrent(0);
       this.updateActiveSlideIds();
-      this.setAnimating(false);
-      this.initHook();
+      this.afterInit();
     };
+    init();
 
-    this.setCurrent(0);
-    this.setAnimating(true);
-    initActiveSlideIds();
-
-    this.resizeTimerId = undefined;
-    this.handleResize = this.handleResize.bind(this);
-    window.addEventListener('resize', this.handleResize, false);
+    window.addEventListener('resize', () => setTimeout(init, 250), false);
 
     const observer = new MutationObserver(
       () => {
-        const currentSlideDom = this.canvas.querySelector(`[data-id="${ this.getCurrent() }"]`);
+        const currentSlideDom = this.target.querySelector(`[data-id="${ this.getCurrent() }"]`);
         if (! currentSlideDom) {
           return;
         }
@@ -57,7 +54,7 @@ class abstractCanvas {
     );
 
     observer.observe(
-      this.canvas,
+      this.target,
       {
         attributes: true,
         attributeFilter: ['data-current']
@@ -65,27 +62,16 @@ class abstractCanvas {
     );
   }
 
-  handleResize() {
-    clearTimeout(this.resizeTimerId);
-    this.resizeTimerId = setTimeout(
-      () => {
-        this.setCurrent(0);
-        this.updateActiveSlideIds();
-      },
-      250
-    );
-  }
-
   scrollLeft() {
-    return this.canvas.scrollLeft;
+    return this.target.scrollLeft;
   }
 
   offsetWidth() {
-    return this.canvas.offsetWidth;
+    return this.target.offsetWidth;
   }
 
   left() {
-    return this.canvas.getBoundingClientRect().left;
+    return this.target.getBoundingClientRect().left;
   }
 
   right() {
@@ -93,13 +79,11 @@ class abstractCanvas {
   }
 
   setCurrent(index) {
-    const newCurrent = Number(index);
-    this.canvas.setAttribute('data-current', newCurrent);
-    this.history.push(newCurrent);
+    this.target.setAttribute('data-current', Number(index));
   }
 
   getCurrent() {
-    return Number(this.canvas.getAttribute('data-current'));
+    return Number(this.target.getAttribute('data-current'));
   }
 
   getSlide(index) {
@@ -107,54 +91,55 @@ class abstractCanvas {
   }
 
   getActiveSlideIds() {
-    return this.activeSlideIds;
+    return JSON.parse(this.target.getAttribute('data-active-slide-ids'));
   }
 
-  setAnimating(animating) {
-    const newAnimating = animating ? 'true' : 'false';
-    this.canvas.setAttribute('data-animating', newAnimating);
+  setActiveSlideIds(ids) {
+    this.target.setAttribute('data-active-slide-ids', JSON.stringify(ids));
   }
 
-  getAnimating() {
-    return 'true' === this.canvas.getAttribute('data-animating');
-  }
-
-  moveTo(current) {
-    throw new Error('abstractCanvas.moveTo is abstract method. Override it with the child class.');
-  }
-
-  getNewActiveSlideIds() {
-    throw new Error('abstractCanvas.moveTo is abstract method. Override it with the child class.');
-  }
-
-  initHook() {}
-
-  /**
-   * If CSS is not applied, retry.
-   */
   updateActiveSlideIds() {
     const newActiveSlideIds = this.getNewActiveSlideIds();
-    const jsonNewActiveSlideIds = JSON.stringify(newActiveSlideIds);
-    if (JSON.stringify(this.historyActiveSlideIds.slice(-1)[0]) === jsonNewActiveSlideIds) {
+    if (JSON.stringify(this.historyActiveSlideIds.slice(-1)[0]) === JSON.stringify(newActiveSlideIds)) {
       return;
     }
 
-    this.activeSlideIds = newActiveSlideIds;
     this.historyActiveSlideIds.push(newActiveSlideIds);
+    this.setActiveSlideIds(newActiveSlideIds)
+  }
+
+  moveTo(current) {
+    abstractMethodOverrideError('abstractCanvas.moveTo');
+  }
+
+  getNewActiveSlideIds() {
+    abstractMethodOverrideError('abstractCanvas.getNewActiveSlideIds');
+  }
+
+  beforeInit() {
+    abstractMethodOverrideError('abstractCanvas.beforeInit');
+  }
+
+  afterInit() {
+    abstractMethodOverrideError('abstractCanvas.afterInit');
   }
 }
 
 class FadeCanvas extends abstractCanvas {
   constructor(canvas, args) {
     super(canvas, args);
-
-    this.initHook = this.initHook.bind(this);
-    window.addEventListener('resize', this.initHook, false);
   }
 
-  initHook() {
-    this.slides.forEach((slide) => slide.style('left', ''));
+  beforeInit() {
+    this.slides.forEach(
+      (slide) => {
+        slide.style('left', '');
+        slide.setHidden(null);
+      }
+    );
+  }
 
+  afterInit() {
     this.slides.forEach(
       (slide, index) => {
         const canvasRight = this.right();
@@ -187,20 +172,18 @@ class FadeCanvas extends abstractCanvas {
       return;
     }
 
-    this.setAnimating(true);
     const handleTransitionend = () => {
       currentSlide.dom.removeEventListener('transitionend', handleTransitionend, false);
-      this.setAnimating(false);
-      addCustomEvent(this.canvas, 'fadeEnd');
+      addCustomEvent(this.target, 'fadeEnd');
     };
     currentSlide.dom.addEventListener('transitionend', handleTransitionend, false);
 
     const visibleSlides = [].slice.call(
-      this.canvas.querySelectorAll('[data-hidden="false"]')
+      this.target.querySelectorAll('[data-hidden="false"]')
     ).map((slide) => new Slide(slide));
 
     const invisibleSlides = [].slice.call(
-      this.canvas.querySelectorAll('[data-hidden="true"]')
+      this.target.querySelectorAll('[data-hidden="true"]')
     ).map((slide) => new Slide(slide));
 
     visibleSlides.forEach((slide) => slide.setHidden('true'));
@@ -261,23 +244,27 @@ class SlideCanvas extends abstractCanvas {
     this.smoothScrollToTimerId = undefined;;
     this.canvasScrollTimerId   = undefined;
 
-    this.setScrollLeft = (left) => this.canvas.scrollLeft = left;
+    this.setScrollLeft = (left) => this.target.scrollLeft = left;
     this.setScrollLeft(0);
 
     this.handleScroll = this.handleScroll.bind(this);
-    this.canvas.addEventListener('scroll', this.handleScroll, false);
+    this.target.addEventListener('scroll', this.handleScroll, false);
+  }
+
+  beforeInit() {
+  }
+
+  afterInit() {
   }
 
   handleScroll() {
     clearTimeout(this.canvasScrollTimerId);
-    this.setAnimating(true);
 
     this.canvasScrollTimerId = setTimeout(
       () => {
         this.updateActiveSlideIds();
         this.setCurrentForWheel();
-        this.setAnimating(false);
-        addCustomEvent(this.canvas, 'scrollEnd');
+        addCustomEvent(this.target, 'scrollEnd');
       },
       250
     );
@@ -317,7 +304,7 @@ class SlideCanvas extends abstractCanvas {
     const step = range / fps; // Scrolling volume per interval
 
     let beforeCanvasScrollLeft = start;
-    this.canvas.style.scrollSnapType = 'none';
+    this.target.style.scrollSnapType = 'none';
 
     const easeOutCirc = (x) => Math.sqrt(1 - Math.pow(x - 1, 2));
 
@@ -329,7 +316,7 @@ class SlideCanvas extends abstractCanvas {
 
         if (Math.abs(range) <= count) {
           clearInterval(this.smoothScrollToTimerId);
-          this.canvas.style.scrollSnapType = '';
+          this.target.style.scrollSnapType = '';
           this.setScrollLeft(left);
         }
       },

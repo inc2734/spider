@@ -91,7 +91,7 @@ const newSpider = (target, options) => {
               _canvas,
               {
                 attributes: true,
-                attributeFilter: ['data-animating']
+                attributeFilter: ['data-active-slide-ids'],
               }
             );
           }

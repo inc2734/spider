@@ -26,7 +26,11 @@ export function Slide(target) {
   };
 
   this.setHidden = (hidden) => {
-    target.setAttribute('data-hidden', hidden);
+    if (null === hidden) {
+      target.removeAttribute('data-hidden');
+    } else {
+      target.setAttribute('data-hidden', hidden);
+    }
   };
 
   this.getHidden = () => {
