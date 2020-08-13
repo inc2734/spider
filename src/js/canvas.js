@@ -131,38 +131,17 @@ class FadeCanvas extends abstractCanvas {
   }
 
   beforeInit() {
-    this.slides.forEach(
-      (slide) => {
-        slide.style('left', '');
-        slide.setHidden(null);
-      }
-    );
   }
 
   afterInit() {
     this.slides.forEach(
       (slide, index) => {
-        const canvasRight = this.right();
-        const canvasWidth = this.offsetWidth();
-        const beforeSlide = this.getSlide( index - 1 );
-
-        if (beforeSlide) {
-          const slideLeft   = slide.left();
-          const canvasSpace = canvasRight - (beforeSlide.left() + beforeSlide.offsetWidth());
-
-          if (canvasRight <= slideLeft) {
-            const distance               = canvasRight - slideLeft;
-            const distancePerCanvasWidth = distance / canvasWidth;
-            const spacePerCanvasWidth    = canvasSpace / canvasWidth;
-            const diffPercent            = distancePerCanvasWidth + spacePerCanvasWidth - 1;
-            const newSlideLeft           = `${ (diffPercent * canvasWidth) }px`;
-
-            slide.style('left', newSlideLeft);
-            slide.setHidden('true');
-            return;
-          }
+        if (0 === index) {
+          slide.setHidden(false);
+          return;
         }
-        slide.setHidden('false');
+        slide.style('left', `${ index * -1 * 100}%`);
+        slide.setHidden(true);
       }
     );
   }
@@ -172,46 +151,12 @@ class FadeCanvas extends abstractCanvas {
       return;
     }
 
-    const handleTransitionend = () => {
-      currentSlide.dom.removeEventListener('transitionend', handleTransitionend, false);
-      addCustomEvent(this.target, 'fadeEnd');
-    };
-    currentSlide.dom.addEventListener('transitionend', handleTransitionend, false);
-
     const visibleSlides = [].slice.call(
       this.target.querySelectorAll('[data-hidden="false"]')
     ).map((slide) => new Slide(slide));
 
-    const invisibleSlides = [].slice.call(
-      this.target.querySelectorAll('[data-hidden="true"]')
-    ).map((slide) => new Slide(slide));
-
     visibleSlides.forEach((slide) => slide.setHidden('true'));
     currentSlide.setHidden('false');
-
-    const current          = this.getCurrent();
-    const currentSlideLeft = currentSlide.left();
-
-    const prevInvisibleSlides = invisibleSlides.concat().reverse().filter((slide) => current > slide.getId());
-    const nextInvisibleSlides = invisibleSlides.filter((slide) => current < slide.getId());
-
-    prevInvisibleSlides.some(
-      (slide) => {
-        if (currentSlideLeft <= slide.left()) {
-          return true;
-        }
-        slide.setHidden('false');
-      }
-    );
-
-    nextInvisibleSlides.some(
-      (slide) => {
-        if (currentSlideLeft >= slide.left()) {
-          return true;
-        }
-        slide.setHidden('false');
-      }
-    );
 
     this.updateActiveSlideIds();
   }

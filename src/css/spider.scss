@@ -17,16 +17,13 @@
   scroll-snap-align: start !important;
 	flex: 1 0 100% !important;
   max-width: 100%;
-
-  > * {
-    flex: 1 1 auto;
-  }
 }
 
 .spider__figure {
-  width: 100%;
-  max-width: 100%;
   height: auto;
+  width: auto;
+  max-width: 100%;
+  max-height: none;
 }
 
 .spider__arrow {
@@ -95,6 +92,14 @@
     margin-top: 1em;
   }
 
+  &[data-thumbnails="true"] {
+    .spider__dot {
+      > .spider__figure {
+        width: 100%;
+      }
+    }
+  }
+
   &:not([data-thumbnails="true"]) {
     .spider__dot {
       background-color: #ccc;
@@ -127,10 +132,17 @@
 
   .spider__slide {
     position: relative !important;
-    transition: opacity .2s ease-in, visibility .2s ease-in;
+    max-width: 100% !important;
+    width: 100% !important;
+
+    &[data-hidden] {
+      transition: opacity .2s ease-in, visibility .2s ease-in;
+    }
 
     &[data-hidden="false"] {
       z-index: 1;
+      opacity: 1;
+      visibility: visible;
     }
 
     &[data-hidden="true"] {

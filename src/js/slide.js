@@ -17,6 +17,10 @@ export function Slide(target) {
     return target.getBoundingClientRect().left;
   };
 
+  this.right = () => {
+    return this.left() + this.offsetWidth();
+  };
+
   this.offsetWidth = () => {
     return target.offsetWidth;
   };
