@@ -86,6 +86,10 @@ class abstractCanvas {
     return Number(this.target.getAttribute('data-current'));
   }
 
+  getSlides() {
+    return this.slides;
+  }
+
   getSlide(index) {
     return this.slides[ index ];
   }

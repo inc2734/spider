@@ -29,6 +29,40 @@ const newSpider = (target, options) => {
     let nextArrow = undefined;
     let dots      = undefined;
 
+    const getInterval = () => {
+      return Number(target.getAttribute('data-interval'));
+    };
+
+    const getFade = () => {
+      return 'true' === target.getAttribute('data-fade');
+    };
+
+    let autoSlideTimerId = undefined;
+    const stopAutoSlide = () => clearTimeout(autoSlideTimerId);
+    const startAutoSlide = (interval) => {
+      stopAutoSlide();
+      if (! canvas) {
+        return;
+      }
+
+      if (0 >= interval) {
+        return;
+      }
+
+      const autoSlide = () => {
+        const current = canvas.getCurrent();
+        const lastSlide = [...canvas.getSlides()].pop();
+        if (current === lastSlide.getId()) {
+          this.moveTo(0);
+        } else {
+          this.next();
+        }
+        autoSlideTimerId = setTimeout(autoSlide, interval);
+      };
+
+      autoSlideTimerId = setTimeout(autoSlide, interval);
+    };
+
     this.initialized = false;
 
     this.destroy = () => {
@@ -57,7 +91,14 @@ const newSpider = (target, options) => {
         prevArrow = new PrevArrow(
           _prevArrow,
           {
-            handleClick: this.prev,
+            handleClick: () => {
+              stopAutoSlide();
+
+              this.prev();
+
+              const interval = getInterval();
+              0 < interval && startAutoSlide(interval);
+            },
           }
         );
       }
@@ -66,7 +107,14 @@ const newSpider = (target, options) => {
         nextArrow = new NextArrow(
           _nextArrow,
           {
-            handleClick: this.next,
+            handleClick: () => {
+              stopAutoSlide();
+
+              this.next();
+
+              const interval = getInterval();
+              0 < interval && startAutoSlide(interval);
+            },
           }
         );
       }
@@ -77,7 +125,14 @@ const newSpider = (target, options) => {
             const dot = new Dot(
               _dot,
               {
-                handleClick: (event) => canvas.setCurrent(event.currentTarget.getAttribute('data-id')),
+                handleClick: (event) => {
+                  stopAutoSlide();
+
+                  canvas.setCurrent(event.currentTarget.getAttribute('data-id'));
+
+                  const interval = getInterval();
+                  0 < interval && startAutoSlide(interval);
+                },
               }
             );
 
@@ -102,9 +157,14 @@ const newSpider = (target, options) => {
         _canvas,
         {
           slide: options.slide,
-          fade: 'true' === target.getAttribute('data-fade'),
+          fade: getFade(),
         }
       );
+
+      if (!! canvas) {
+        const interval = getInterval();
+        0 < interval && startAutoSlide(interval);
+      }
 
       this.initialized = true;
       target.setAttribute('data-initialized', 'true');
@@ -141,7 +201,7 @@ const newSpider = (target, options) => {
           this.next();
         }
       }
-    }
+    };
 
     this.moveTo = (index) => {
       !! canvas && !! canvas.getSlide(index) && canvas.setCurrent(index);
