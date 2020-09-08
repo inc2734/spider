@@ -7,6 +7,13 @@
   overflow-scrolling: touch;
   overflow-x: scroll;
   display: flex;
+
+  -ms-overflow-style: none;  // For IE and Edge
+  scrollbar-width: none;  // For Firefox
+
+  &::-webkit-scrollbar {
+    display: none;  // For Chrome and Safari
+  }
 }
 
 .spider__slide {
