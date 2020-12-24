@@ -36,6 +36,7 @@
     "start": "npm run build",
     "clean:js": "rimraf dist/js && mkdir -p dist/js",
     "clean:css": "rimraf dist/css && mkdir -p dist/css",
+    "clean:zip": "rimraf spider.zip",
     "js": "npm run clean:js && rollup -c",
     "css": "npm run clean:js && node-sass src/css/spider.scss dist/css/spider.css && postcss -r dist/css/spider.css -c=postcss.config.js",
     "docs:clean:js": "rimraf docs/dist/js && mkdir -p docs/dist/js",
@@ -46,7 +47,10 @@
     "docs:css": "npm-run-all -p docs:css:*",
     "docs": "npm-run-all -p docs:js docs:css",
     "build": "npm-run-all -p css js docs",
-    "server": "browser-sync start --server 'docs' --index 'index.html' --files 'docs'"
+    "server": "browser-sync start --server 'docs' --index 'index.html' --files 'docs'",
+    "zip:pack": "rsync -a --exclude='/node_modules' --exclude='.*' --exclude='*.config.js' --exclude='package*.json' . spider && cd spider",
+    "zip:archive": "zip -9 -qmr spider.zip spider",
+    "zip": "npm run clean:zip && npm run zip:pack && npm run zip:archive"
   },
   "dependencies": {}
 }
