@@ -28,7 +28,9 @@ class abstractCanvas {
         return;
       }
 
+      this.setWidth('');
       this.beforeInit();
+      this.setWidth(`${ Math.floor(this.offsetWidth()) }px`);
       this.setCurrent(0);
       this.updateActiveSlideIds();
       this.afterInit();
@@ -76,6 +78,10 @@ class abstractCanvas {
 
   right() {
     return this.left() + this.offsetWidth();
+  }
+
+  setWidth(width) {
+    this.target.style.width = width;
   }
 
   setCurrent(index) {
