@@ -57,16 +57,17 @@ export class SlideCanvas extends abstractCanvas {
   }
 
   setCurrentForWheel() {
-    const canvasLeft = this.left();
-    this.slides.some(
-      (slide, index) => {
-        const slideRelLeft = Math.abs(slide.left() - canvasLeft);
-        if (0 === slideRelLeft) {
-          this.setCurrent(slide.getId());
-          return true;
-        }
+    const reducer = (accumulator, slide) => {
+      if (0 > accumulator.left()) {
+        return slide;
       }
-    );
+      if (0 > slide.left()) {
+        return accumulator;
+      }
+      return accumulator.left() > slide.left() ? slide : accumulator;
+    };
+    const nearlySlide = this.slides.reduce(reducer);
+    this.setCurrent(nearlySlide.getId());
   }
 
   /**
@@ -89,7 +90,7 @@ export class SlideCanvas extends abstractCanvas {
 
     const step = range / fps; // Scrolling volume per interval
 
-    this.target.style.scrollSnapType = 'none';
+    //this.target.style.scrollSnapType = 'none';
 
     const easeOutCirc = (x) => Math.sqrt(1 - Math.pow(x - 1, 2));
 
@@ -101,8 +102,8 @@ export class SlideCanvas extends abstractCanvas {
 
         if (Math.abs(range) <= count) {
           clearInterval(this.smoothScrollToTimerId);
-          this.target.style.scrollSnapType = '';
           this.setScrollLeft(left);
+          //this.target.style.scrollSnapType = '';
         }
       },
       fps
