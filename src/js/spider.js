@@ -4,6 +4,7 @@ import { Canvas } from './canvas';
 import { PrevArrow } from './prev-arrow';
 import { NextArrow } from './next-arrow';
 import { Dot } from './dot';
+import { Slide } from './slide';
 
 const newSpiders = (sliders, options) => {
   const spiders = [];
@@ -119,7 +120,20 @@ const newSpider = (target, options) => {
         );
       }
 
-      if (0 < _dots.length) {
+      canvas = new Canvas(
+        _canvas,
+        {
+          slide: options.slide,
+          fade: getFade(),
+        }
+      );
+
+      if (!! canvas) {
+        const interval = getInterval();
+        0 < interval && startAutoSlide(interval);
+      }
+
+      if (!! canvas && 0 < _dots.length) {
         [].slice.call(_dots).forEach(
           (_dot) => {
             const dot = new Dot(
@@ -136,34 +150,24 @@ const newSpider = (target, options) => {
               }
             );
 
-            const observer = new MutationObserver(
-              (mutation) => {
-                dot.updateCurrent(canvas.getActiveSlideIds());
-              }
-            );
+            canvas.getCurrent() === dot.getId() ? dot.active() : dot.inactive();
+
+            const observer = new MutationObserver((mutations) => {
+              mutations.forEach((mutation) => {
+                const slide = new Slide(mutation.target);
+                slide.isActive() ? dot.active() : dot.inactive();
+              });
+            });
 
             observer.observe(
-              _canvas,
+              canvas.getSlide(dot.getId()).dom,
               {
                 attributes: true,
-                attributeFilter: ['data-active-slide-ids'],
+                attributeFilter: ['data-active'],
               }
             );
           }
         );
-      }
-
-      canvas = new Canvas(
-        _canvas,
-        {
-          slide: options.slide,
-          fade: getFade(),
-        }
-      );
-
-      if (!! canvas) {
-        const interval = getInterval();
-        0 < interval && startAutoSlide(interval);
       }
 
       this.initialized = true;
@@ -181,7 +185,7 @@ const newSpider = (target, options) => {
         const goto = current - 1;
         canvas.setCurrent(goto);
 
-        if ('false' === canvas.getSlide(goto).getHidden()) {
+        if (canvas.getSlide(goto).isActive()) {
           this.prev();
         }
       }
@@ -197,7 +201,7 @@ const newSpider = (target, options) => {
         const goto = current + 1;
         canvas.setCurrent(goto);
 
-        if ('false' === canvas.getSlide(goto).getHidden()) {
+        if (canvas.getSlide(goto).isActive()) {
           this.next();
         }
       }

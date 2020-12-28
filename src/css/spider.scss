@@ -141,20 +141,14 @@
     position: relative !important;
     max-width: 100% !important;
     width: 100% !important;
+    transition: opacity .2s ease-in, visibility .2s ease-in;
+    opacity: 0;
+    visibility: hidden;
 
-    &[data-hidden] {
-      transition: opacity .2s ease-in, visibility .2s ease-in;
-    }
-
-    &[data-hidden="false"] {
+    &[data-active="true"] {
       z-index: 1;
       opacity: 1;
       visibility: visible;
-    }
-
-    &[data-hidden="true"] {
-      opacity: 0;
-      visibility: hidden;
     }
   }
 }

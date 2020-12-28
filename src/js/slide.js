@@ -10,11 +10,11 @@ export function Slide(target) {
   };
 
   this.top = () => {
-    return target.getBoundingClientRect().top;
+    return this.dom.getBoundingClientRect().top;
   };
 
   this.left = () => {
-    return target.getBoundingClientRect().left;
+    return this.dom.getBoundingClientRect().left;
   };
 
   this.right = () => {
@@ -22,22 +22,22 @@ export function Slide(target) {
   };
 
   this.offsetWidth = () => {
-    return target.offsetWidth;
+    return this.dom.offsetWidth;
   };
 
   this.style = (property, value) => {
-    target.style[ property ] = value;
+    this.dom.style[ property ] = value;
   };
 
-  this.setHidden = (hidden) => {
-    if (null === hidden) {
-      target.removeAttribute('data-hidden');
-    } else {
-      target.setAttribute('data-hidden', hidden);
-    }
-  };
+  this.active = () => {
+    this.dom.setAttribute('data-active', 'true');
+  }
 
-  this.getHidden = () => {
-    return target.getAttribute('data-hidden');
+  this.inactive = () => {
+    this.dom.removeAttribute('data-active', 'true');
+  }
+
+  this.isActive = () => {
+    return 'true' === this.dom.getAttribute('data-active');
   }
 }
