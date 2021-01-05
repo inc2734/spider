@@ -16,26 +16,28 @@ export class SlideCanvas extends abstractCanvas {
     this.handleScroll = this.handleScroll.bind(this);
     this.target.addEventListener('scroll', this.handleScroll, false);
 
-    const activeSlideIdsObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const slide = new Slide(entry.target);
-          if (entry.isIntersecting) {
-            this.slides[ slide.getId() ].active();
-          } else {
-            this.slides[ slide.getId() ].inactive();
-          }
-        });
-      },
-      {
-        root: this.target,
-        rootMargin: "0px -1px",
-        threshold: 0,
-      }
-    );
-    this.slides.forEach((slide) => {
-      activeSlideIdsObserver.observe(slide.dom);
-    });
+    if ('undefined' !== typeof IntersectionObserver) {
+      const activeSlideIdsObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const slide = new Slide(entry.target);
+            if (entry.isIntersecting) {
+              this.slides[ slide.getId() ].active();
+            } else {
+              this.slides[ slide.getId() ].inactive();
+            }
+          });
+        },
+        {
+          root: this.target,
+          rootMargin: "0px -1px",
+          threshold: 0,
+        }
+      );
+      this.slides.forEach((slide) => {
+        activeSlideIdsObserver.observe(slide.dom);
+      });
+    }
   }
 
   beforeInit() {

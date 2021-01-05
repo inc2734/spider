@@ -4,7 +4,6 @@ import { Canvas } from './canvas';
 import { PrevArrow } from './prev-arrow';
 import { NextArrow } from './next-arrow';
 import { Dot } from './dot';
-import { Slide } from './slide';
 
 const newSpiders = (sliders, options) => {
   const spiders = [];
@@ -139,6 +138,8 @@ const newSpider = (target, options) => {
             const dot = new Dot(
               _dot,
               {
+                initial: canvas.getCurrent() === Number(_dot.getAttribute('data-id')),
+                relatedSlide: canvas.getSlide(Number(_dot.getAttribute('data-id'))),
                 handleClick: (event) => {
                   stopAutoSlide();
 
@@ -147,23 +148,6 @@ const newSpider = (target, options) => {
                   const interval = getInterval();
                   0 < interval && startAutoSlide(interval);
                 },
-              }
-            );
-
-            canvas.getCurrent() === dot.getId() ? dot.active() : dot.inactive();
-
-            const observer = new MutationObserver((mutations) => {
-              mutations.forEach((mutation) => {
-                const slide = new Slide(mutation.target);
-                slide.isActive() ? dot.active() : dot.inactive();
-              });
-            });
-
-            observer.observe(
-              canvas.getSlide(dot.getId()).dom,
-              {
-                attributes: true,
-                attributeFilter: ['data-active'],
               }
             );
           }
