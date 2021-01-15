@@ -47,12 +47,16 @@ export class SlideCanvas extends abstractCanvas {
   }
 
   handleScroll() {
-    clearTimeout(this.canvasScrollTimerId);
+    if (! this.canvasScrollTimerId ) {
+      return;
+    }
 
     this.canvasScrollTimerId = setTimeout(
       () => {
         this.setCurrentForWheel();
         addCustomEvent(this.target, 'scrollEnd');
+        clearTimeout(this.canvasScrollTimerId);
+        this.canvasScrollTimerId = undefined;
       },
       250
     );

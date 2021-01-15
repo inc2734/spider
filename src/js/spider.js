@@ -40,7 +40,6 @@ const newSpider = (target, options) => {
     let autoSlideTimerId = undefined;
     const stopAutoSlide = () => clearTimeout(autoSlideTimerId);
     const startAutoSlide = (interval) => {
-      stopAutoSlide();
       if (! canvas) {
         return;
       }
