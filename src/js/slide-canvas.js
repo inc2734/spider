@@ -47,7 +47,7 @@ export class SlideCanvas extends abstractCanvas {
   }
 
   handleScroll() {
-    if (! this.canvasScrollTimerId ) {
+    if (this.canvasScrollTimerId) {
       return;
     }
 
