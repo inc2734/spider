@@ -27,7 +27,6 @@ const newSpider = (target, options) => {
     let canvas    = undefined;
     let prevArrow = undefined;
     let nextArrow = undefined;
-    let dots      = undefined;
 
     const getInterval = () => {
       return Number(target.getAttribute('data-interval'));
@@ -128,7 +127,12 @@ const newSpider = (target, options) => {
 
       if (!! canvas) {
         const interval = getInterval();
-        0 < interval && startAutoSlide(interval);
+        if (0 < interval) {
+          startAutoSlide(interval);
+
+          _canvas.addEventListener('setCurrentForWheel', () => stopAutoSlide(), false);
+          _canvas.addEventListener('scrollEnd', () => startAutoSlide(interval), false);
+        }
       }
 
       if (!! canvas && 0 < _dots.length) {

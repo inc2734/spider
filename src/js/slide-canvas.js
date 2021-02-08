@@ -47,18 +47,14 @@ export class SlideCanvas extends abstractCanvas {
   }
 
   handleScroll() {
-    if (this.canvasScrollTimerId) {
-      return;
-    }
+    clearTimeout(this.canvasScrollTimerId);
 
     this.canvasScrollTimerId = setTimeout(
       () => {
         this.setCurrentForWheel();
         addCustomEvent(this.target, 'scrollEnd');
-        clearTimeout(this.canvasScrollTimerId);
-        this.canvasScrollTimerId = undefined;
       },
-      250
+      500
     );
   }
 
@@ -74,6 +70,7 @@ export class SlideCanvas extends abstractCanvas {
     };
     const nearlySlide = this.slides.reduce(reducer);
     this.setCurrent(nearlySlide.getId());
+    addCustomEvent(this.target, 'setCurrentForWheel');
   }
 
   /**
