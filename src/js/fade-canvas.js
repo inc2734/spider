@@ -5,21 +5,15 @@ export class FadeCanvas extends abstractCanvas {
   constructor(canvas, args) {
     super(canvas, args);
 
-    const observer = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
-        const current = Number(mutation.target.getAttribute('data-current'));
-        this.slides.forEach((slide) => {
-          current === slide.getId() ? slide.active() : slide.inactive();
+    // Slides active/inactive ovserver
+    canvas.addEventListener(
+      'updateCurrent',
+      () => {
+        this.getSlides().forEach((slide) => {
+          this.getCurrent() === slide.getId() ? slide.active() : slide.inactive();
         });
-      });
-    });
-
-    observer.observe(
-      this.target,
-      {
-        attributes: true,
-        attributeFilter: ['data-current']
-      }
+      },
+      false
     );
   }
 

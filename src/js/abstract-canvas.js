@@ -1,3 +1,5 @@
+import addCustomEvent from '@inc2734/add-custom-event';
+
 import { Slide } from './slide';
 
 const abstractMethodOverrideError = (methodName) => {
@@ -48,6 +50,7 @@ export class abstractCanvas {
           return;
         }
 
+        addCustomEvent(this.target, 'updateCurrent');
         this.moveTo(currentSlide);
       }
     );

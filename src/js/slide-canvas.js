@@ -16,6 +16,7 @@ export class SlideCanvas extends abstractCanvas {
     this.handleScroll = this.handleScroll.bind(this);
     this.target.addEventListener('scroll', this.handleScroll, false);
 
+    // Slides active/inactive ovserver
     if ('undefined' !== typeof IntersectionObserver) {
       const activeSlideIdsObserver = new IntersectionObserver(
         (entries) => {
