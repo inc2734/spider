@@ -130,8 +130,14 @@ const newSpider = (target, options) => {
         if (0 < interval) {
           startAutoSlide(interval);
 
-          _canvas.addEventListener('setCurrentForWheel', () => stopAutoSlide(), false);
-          _canvas.addEventListener('scrollEnd', () => startAutoSlide(interval), false);
+          _canvas.addEventListener(
+            'setCurrentForWheel',
+            () => {
+              stopAutoSlide();
+              startAutoSlide(interval);
+            },
+            false
+          );
         }
       }
 
