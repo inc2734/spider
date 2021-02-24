@@ -152,7 +152,7 @@ const newSpider = (target, options) => {
                 handleClick: (event) => {
                   stopAutoSlide();
 
-                  canvas.setCurrent(event.currentTarget.getAttribute('data-id'));
+                  this.moveTo(event.currentTarget.getAttribute('data-id'));
 
                   const interval = getInterval();
                   0 < interval && startAutoSlide(interval);
@@ -174,14 +174,12 @@ const newSpider = (target, options) => {
         return;
       }
 
-      if (0 < current) {
-        const goto = current - 1;
-        canvas.setCurrent(goto);
-
-        if (canvas.getSlide(goto).isActive()) {
-          this.prev();
-        }
+      if (0 === current) {
+        return;
       }
+
+      const goto = current - 1;
+      this.moveTo(goto);
     };
 
     this.next = () => {
@@ -190,14 +188,16 @@ const newSpider = (target, options) => {
         return;
       }
 
-      if (canvas.slides.length - 1 > current) {
-        const goto = current + 1;
-        canvas.setCurrent(goto);
-
-        if (canvas.getSlide(goto).isActive()) {
-          this.next();
-        }
+      const lastSlide = [...canvas.getSlides()].pop();
+      if (lastSlide.isActive()) {
+        return;
       }
+      if (current === lastSlide.getId()) {
+        return;
+      }
+
+      const goto = current + 1;
+      this.moveTo(goto);
     };
 
     this.moveTo = (index) => {

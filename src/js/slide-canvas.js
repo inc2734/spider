@@ -7,14 +7,14 @@ export class SlideCanvas extends abstractCanvas {
   constructor(canvas, args) {
     super(canvas, args);
 
-    this.smoothScrollToTimerId = undefined;;
+    this.smoothScrollToTimerId = undefined;
     this.canvasScrollTimerId   = undefined;
 
-    this.setScrollLeft = (left) => this.target.scrollLeft = left;
+    this.setScrollLeft = (left) => this.dom.scrollLeft = left;
     this.setScrollLeft(0);
 
     this.handleScroll = this.handleScroll.bind(this);
-    this.target.addEventListener('scroll', this.handleScroll, false);
+    this.dom.addEventListener('scroll', this.handleScroll, false);
 
     // Slides active/inactive ovserver
     if ('undefined' !== typeof IntersectionObserver) {
@@ -30,7 +30,7 @@ export class SlideCanvas extends abstractCanvas {
           });
         },
         {
-          root: this.target,
+          root: this.dom,
           rootMargin: "0px -1px",
           threshold: 0,
         }
@@ -55,7 +55,7 @@ export class SlideCanvas extends abstractCanvas {
         if (0 !== this.getSlide(this.getCurrent()).left()) {
           this.setCurrentForWheel();
         }
-        addCustomEvent(this.target, 'scrollEnd');
+        addCustomEvent(this.dom, 'scrollEnd');
       },
       500
     );
@@ -73,7 +73,7 @@ export class SlideCanvas extends abstractCanvas {
     };
     const nearlySlide = this.slides.reduce(reducer);
     this.setCurrent(nearlySlide.getId());
-    addCustomEvent(this.target, 'setCurrentForWheel');
+    addCustomEvent(this.dom, 'setCurrentForWheel');
   }
 
   /**
@@ -96,7 +96,7 @@ export class SlideCanvas extends abstractCanvas {
 
     const step = range / fps; // Scrolling volume per interval
 
-    //this.target.style.scrollSnapType = 'none';
+    //this.dom.style.scrollSnapType = 'none';
 
     const easeOutCirc = (x) => Math.sqrt(1 - Math.pow(x - 1, 2));
 
@@ -109,7 +109,7 @@ export class SlideCanvas extends abstractCanvas {
         if (Math.abs(range) <= count) {
           clearInterval(this.smoothScrollToTimerId);
           this.setScrollLeft(left);
-          //this.target.style.scrollSnapType = '';
+          //this.dom.style.scrollSnapType = '';
         }
       },
       fps

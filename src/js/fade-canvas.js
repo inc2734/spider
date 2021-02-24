@@ -1,3 +1,5 @@
+import addCustomEvent from '@inc2734/add-custom-event';
+
 import { abstractCanvas } from './abstract-canvas';
 import { Slide } from './slide';
 
@@ -39,10 +41,16 @@ export class FadeCanvas extends abstractCanvas {
     }
 
     const visibleSlides = [].slice.call(
-      this.target.querySelectorAll('[data-active="false"]')
+      this.dom.querySelectorAll('[data-active="false"]')
     ).map((slide) => new Slide(slide));
 
     visibleSlides.forEach((slide) => slide.inactive());
     currentSlide.active();
+
+    const fadeEnd = () => {
+      currentSlide.dom.removeEventListener('transitionend', fadeEnd, false);
+      addCustomEvent(this.dom, 'fadeEnd');
+    };
+    currentSlide.dom.addEventListener('transitionend', fadeEnd, false);
   }
 }

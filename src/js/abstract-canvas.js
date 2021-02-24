@@ -8,9 +8,9 @@ const abstractMethodOverrideError = (methodName) => {
 
 export class abstractCanvas {
   constructor(target, args) {
-    this.target = target;
+    this.dom    = target;
     this.args   = args;
-    this.slides = [].slice.call(this.target.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
+    this.slides = [].slice.call(this.dom.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
     this.historyActiveSlideIds = [];
 
     // If CSS is applied, the number of elements will be 1.
@@ -40,7 +40,7 @@ export class abstractCanvas {
 
     const observer = new MutationObserver(
       () => {
-        const currentSlideDom = this.target.querySelector(`[data-id="${ this.getCurrent() }"]`);
+        const currentSlideDom = this.dom.querySelector(`[data-id="${ this.getCurrent() }"]`);
         if (! currentSlideDom) {
           return;
         }
@@ -50,13 +50,13 @@ export class abstractCanvas {
           return;
         }
 
-        addCustomEvent(this.target, 'updateCurrent');
+        addCustomEvent(this.dom, 'updateCurrent');
         this.moveTo(currentSlide);
       }
     );
 
     observer.observe(
-      this.target,
+      this.dom,
       {
         attributes: true,
         attributeFilter: ['data-current']
@@ -65,15 +65,15 @@ export class abstractCanvas {
   }
 
   scrollLeft() {
-    return this.target.scrollLeft;
+    return this.dom.scrollLeft;
   }
 
   offsetWidth() {
-    return this.target.offsetWidth;
+    return this.dom.offsetWidth;
   }
 
   left() {
-    return this.target.getBoundingClientRect().left;
+    return this.dom.getBoundingClientRect().left;
   }
 
   right() {
@@ -81,15 +81,15 @@ export class abstractCanvas {
   }
 
   setWidth(width) {
-    this.target.style.width = width;
+    this.dom.style.width = width;
   }
 
   setCurrent(index) {
-    this.target.setAttribute('data-current', Number(index));
+    this.dom.setAttribute('data-current', Number(index));
   }
 
   getCurrent() {
-    return Number(this.target.getAttribute('data-current'));
+    return Number(this.dom.getAttribute('data-current'));
   }
 
   getSlides() {
