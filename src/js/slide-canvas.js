@@ -52,7 +52,11 @@ export class SlideCanvas extends abstractCanvas {
 
     this.canvasScrollTimerId = setTimeout(
       () => {
-        if (0 !== this.getSlide(this.getCurrent()).left()) {
+        const currentSlideLeft = this.getSlide(this.getCurrent()).left();
+        if (
+          -1 > currentSlideLeft
+          || 1 < currentSlideLeft
+        ) {
           this.setCurrentForWheel();
         }
         addCustomEvent(this.dom, 'scrollEnd');
