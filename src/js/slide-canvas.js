@@ -31,7 +31,7 @@ export class SlideCanvas extends abstractCanvas {
         },
         {
           root: this.dom,
-          rootMargin: "0px -1px",
+          rootMargin: "0px -1.5px",
           threshold: 0,
         }
       );
