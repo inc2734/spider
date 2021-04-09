@@ -48,9 +48,9 @@ const newSpider = (target, options) => {
       }
 
       const autoSlide = () => {
-        const current = canvas.getCurrent();
+        const activeSlides = canvas.getSlides().filter((slide) => slide.isActive());
         const lastSlide = [...canvas.getSlides()].pop();
-        if (current === lastSlide.getId()) {
+        if (activeSlides.includes(lastSlide)) {
           this.moveTo(0);
         } else {
           this.next();
