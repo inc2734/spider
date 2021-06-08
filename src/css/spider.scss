@@ -135,6 +135,7 @@
 [data-fade="true"] {
   .spider__canvas {
     position: relative !important;
+    overflow-x: hidden;
   }
 
   .spider__slide {
