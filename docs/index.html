@@ -29,6 +29,15 @@
       margin-right: 20px;
     }
   }
+
+  .alignfull {
+    margin-right: calc(50% - 50vw);
+    margin-left: calc(50% - 50vw);
+  }
+  .alignfull img {
+    width: 100%;
+    max-width: none;
+  }
   </style>
   <title>Spider</title>
 </head>
@@ -576,7 +585,7 @@ var spider = new Spider('#using-id-selector');
 
   <h2>Full width</h2>
   <h3>Slide</h3>
-  <div class="spider-container" id="interval" data-interval="5000" style="margin: calc(50% - 50vw)">
+  <div class="spider-container alignfull">
     <div class="spider">
       <div class="spider__canvas">
         <div class="spider__slide" data-id="0">
@@ -615,7 +624,7 @@ var spider = new Spider('#using-id-selector');
     </div>
   </div>
 
-  <pre>&lt;div class="spider-container" data-interval="5000" style="margin: calc(50% - 50vw)"&gt;
+  <pre>&lt;div class="spider-container alignfull"&gt;
     &lt;div class="spider"&gt;
     &lt;div class="spider__canvas"&gt;
       &lt;div class="spider__slide"&gt;
@@ -632,10 +641,21 @@ var spider = new Spider('#using-id-selector');
     &lt;button class="spider__dot" data-id="0"&gt;0&lt;/button&gt;
     ...
   &lt;/div&gt;
-&lt;/div&gt;</pre>
+&lt;/div&gt;
+
+&lt;style&gt;
+.alignfull {
+  margin-right: calc(50% - 50vw);
+  margin-left: calc(50% - 50vw);
+}
+.alignfull img {
+  width: 100%;
+  max-width: none;
+}
+&lt;/style&gt;</pre>
 
   <h3>Fade</h3>
-  <div class="spider-container" id="interval-fade" data-interval="5000" data-fade="true" style="margin: calc(50% - 50vw)">
+  <div class="spider-container alignfull" data-fade="true">
     <div class="spider">
       <div class="spider__canvas">
         <div class="spider__slide" data-id="0">
@@ -674,7 +694,7 @@ var spider = new Spider('#using-id-selector');
     </div>
   </div>
 
-  <pre>&lt;div class="spider-container" data-interval="5000" data-fade="true" style="margin: calc(50% - 50vw)"&gt;
+  <pre>&lt;div class="spider-container alignfull" data-fade="true"&gt;
     &lt;div class="spider"&gt;
     &lt;div class="spider__canvas"&gt;
       &lt;div class="spider__slide"&gt;
@@ -691,7 +711,18 @@ var spider = new Spider('#using-id-selector');
     &lt;button class="spider__dot" data-id="0"&gt;0&lt;/button&gt;
     ...
   &lt;/div&gt;
-&lt;/div&gt;</pre>
+&lt;/div&gt;
+
+&lt;style&gt;
+.alignfull {
+  margin-right: calc(50% - 50vw);
+  margin-left: calc(50% - 50vw);
+}
+.alignfull img {
+  width: 100%;
+  max-width: none;
+}
+&lt;/style&gt;</pre>
 
   <p>
     GitHub: <a href="https://github.com/inc2734/spider">https://github.com/inc2734/spider</a>

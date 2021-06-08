@@ -23,16 +23,16 @@ export class SlideCanvas extends abstractCanvas {
           entries.forEach((entry) => {
             const slide = new Slide(entry.target);
             if (entry.isIntersecting) {
-              this.slides[ slide.getId() ].active();
+              slide.active();
             } else {
-              this.slides[ slide.getId() ].inactive();
+              slide.inactive();
             }
           });
         },
         {
           root: this.dom,
           rootMargin: "0px -1.5px",
-          threshold: 0,
+          threshold: [0.5, 1],
         }
       );
       this.slides.forEach((slide) => {
