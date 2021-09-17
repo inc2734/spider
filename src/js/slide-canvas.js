@@ -16,6 +16,17 @@ export class SlideCanvas extends abstractCanvas {
     this.handleScroll = this.handleScroll.bind(this);
     this.dom.addEventListener('scroll', this.handleScroll, false);
 
+    this.dragStartX = undefined;
+    this.dragStartScrollLeft = undefined;
+    this.isDrag = false;
+    this.handleMousedown = this.handleMousedown.bind(this);
+    this.dom.addEventListener('mousedown', this.handleMousedown, false);
+    this.handleMousemove = this.handleMousemove.bind(this);
+    this.dom.addEventListener('mousemove', this.handleMousemove, false);
+    this.handleMouseup = this.handleMouseup.bind(this);
+    this.dom.addEventListener('mouseup', this.handleMouseup, false);
+    this.dom.addEventListener('mouseleave', this.handleMouseup, false);
+
     // Slides active/inactive ovserver
     if ('undefined' !== typeof IntersectionObserver) {
       const activeSlideIdsObserver = new IntersectionObserver(
@@ -49,6 +60,9 @@ export class SlideCanvas extends abstractCanvas {
 
   handleScroll() {
     clearTimeout(this.canvasScrollTimerId);
+    if (this.isDrag) {
+      return;
+    }
 
     this.canvasScrollTimerId = setTimeout(
       () => {
@@ -64,15 +78,44 @@ export class SlideCanvas extends abstractCanvas {
     );
   }
 
+  handleMousedown(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    clearTimeout(this.canvasScrollTimerId);
+    this.isDrag = true;
+    this.dragStartScrollLeft = this.scrollLeft();
+    this.dragStartX = event.clientX;
+  }
+
+  handleMousemove(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (this.isDrag) {
+      this.setScrollLeft(this.dragStartScrollLeft + this.dragStartX - event.clientX);
+    }
+  }
+
+  handleMouseup(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.isDrag = false;
+    this.dragStartScrollLeft = undefined;
+    this.dragStartX = undefined;
+
+    this.handleScroll();
+  }
+
   setCurrentForWheel() {
     const reducer = (accumulator, slide) => {
-      if (0 > accumulator.left()) {
-        return slide;
-      }
-      if (0 > slide.left()) {
-        return accumulator;
-      }
-      return accumulator.left() > slide.left() ? slide : accumulator;
+      const accumulatorDisplaySize = accumulator.offsetWidth() - Math.abs(this.left() - accumulator.left());
+      const slideDisplaySize = slide.offsetWidth() - Math.abs(this.left() - slide.left());
+
+      return slideDisplaySize > accumulatorDisplaySize
+        ? slide
+        : accumulator;
     };
     const nearlySlide = this.slides.reduce(reducer);
     this.setCurrent(nearlySlide.getId());
