@@ -1,6 +1,7 @@
 import addCustomEvent from '@inc2734/add-custom-event';
 
-import { Canvas } from './canvas';
+import { SlideCanvas } from './slide-canvas';
+import { FadeCanvas } from './fade-canvas';
 import { PrevArrow } from './prev-arrow';
 import { NextArrow } from './next-arrow';
 import { Dot } from './dot';
@@ -117,31 +118,40 @@ const newSpider = (target, options) => {
         );
       }
 
-      canvas = new Canvas(
+      const canvasClass = getFade()
+        ? FadeCanvas
+        : SlideCanvas;
+
+      canvas = new canvasClass(
         _canvas,
         {
           slide: options.slide,
-          fade: getFade(),
         }
       );
 
-      if (!! canvas) {
-        const interval = getInterval();
-        if (0 < interval) {
-          startAutoSlide(interval);
+      const interval = getInterval();
+      if (0 < interval) {
+        startAutoSlide(interval);
 
-          _canvas.addEventListener(
-            'setCurrentForWheel',
-            () => {
-              stopAutoSlide();
-              startAutoSlide(interval);
-            },
-            false
-          );
-        }
+        _canvas.addEventListener(
+          'setCurrentForWheel',
+          () => {
+            stopAutoSlide();
+            startAutoSlide(interval);
+          },
+          false
+        );
+
+        ['scroll', 'mousedown'].forEach(
+          (type) => _canvas.addEventListener(type, () => stopAutoSlide(), false)
+        );
+
+        ['scrollEnd', 'mouseup', 'mouseleave'].forEach(
+          (type) => _canvas.addEventListener(type, () => startAutoSlide(interval), false)
+        );
       }
 
-      if (!! canvas && 0 < _dots.length) {
+      if (0 < _dots.length) {
         [].slice.call(_dots).forEach(
           (_dot) => {
             const dot = new Dot(

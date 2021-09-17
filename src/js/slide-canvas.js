@@ -16,14 +16,17 @@ export class SlideCanvas extends abstractCanvas {
     this.handleScroll = this.handleScroll.bind(this);
     this.dom.addEventListener('scroll', this.handleScroll, false);
 
-    this.dragStartX = undefined;
+    this.dragStartX          = undefined;
     this.dragStartScrollLeft = undefined;
-    this.dragStartTime = undefined;
-    this.isDrag = false;
+    this.dragStartTime       = undefined;
+    this.isDrag              = false;
+
     this.handleMousedown = this.handleMousedown.bind(this);
     this.dom.addEventListener('mousedown', this.handleMousedown, false);
+
     this.handleMousemove = this.handleMousemove.bind(this);
     this.dom.addEventListener('mousemove', this.handleMousemove, false);
+
     this.handleMouseup = this.handleMouseup.bind(this);
     this.dom.addEventListener('mouseup', this.handleMouseup, false);
     this.dom.addEventListener('mouseleave', this.handleMouseup, false);
@@ -84,10 +87,11 @@ export class SlideCanvas extends abstractCanvas {
     event.stopPropagation();
 
     clearTimeout(this.canvasScrollTimerId);
-    this.dragStartX = event.clientX;
+
+    this.dragStartX          = event.clientX;
     this.dragStartScrollLeft = this.scrollLeft();
-    this.dragStartTime = new Date;
-    this.isDrag = true;
+    this.dragStartTime       = new Date;
+    this.isDrag              = true;
   }
 
   handleMousemove(event) {
@@ -109,27 +113,19 @@ export class SlideCanvas extends abstractCanvas {
       return;
     }
 
-    const dragEndTime = new Date;
-    const timeTaken = dragEndTime.getTime() - this.dragStartTime.getTime();
-    const distanceMoved = Math.abs(event.clientX - this.dragStartX);
+    const dragEndTime   = new Date;
+    const timeTaken     = dragEndTime.getTime() - this.dragStartTime.getTime();
+    const distanceMoved = event.clientX - this.dragStartX;
 
     if (300 > timeTaken) {
-      const direction = 0 < this.dragStartX - event.clientX ? 'next' : event.clientX !== this.dragStartX ? 'prev' : false;
-      let newLeft = false;
-      if ('next' === direction) {
-        newLeft = this.scrollLeft() + (distanceMoved / timeTaken) * 100;
-      } else if ('prev' === direction) {
-        newLeft = this.scrollLeft() - (distanceMoved / timeTaken) * 100;
-      }
-      if (false !== newLeft) {
-        this.moveToLeft(newLeft);
-      }
+      const newLeft = this.scrollLeft() - (distanceMoved / timeTaken) * 100;
+      this.moveToLeft(newLeft);
     }
 
-    this.dragStartX = undefined;
+    this.dragStartX          = undefined;
     this.dragStartScrollLeft = undefined;
-    this.dragStartTime = undefined;
-    this.isDrag = false;
+    this.dragStartTime       = undefined;
+    this.isDrag              = false;
 
     this.handleScroll();
   }
@@ -137,7 +133,7 @@ export class SlideCanvas extends abstractCanvas {
   setCurrentForWheel() {
     const reducer = (accumulator, slide) => {
       const accumulatorDisplaySize = accumulator.offsetWidth() - Math.abs(this.left() - accumulator.left());
-      const slideDisplaySize = slide.offsetWidth() - Math.abs(this.left() - slide.left());
+      const slideDisplaySize       = slide.offsetWidth() - Math.abs(this.left() - slide.left());
 
       return slideDisplaySize > accumulatorDisplaySize
         ? slide
