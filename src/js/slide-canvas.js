@@ -16,21 +16,6 @@ export class SlideCanvas extends abstractCanvas {
     this.handleScroll = this.handleScroll.bind(this);
     this.dom.addEventListener('scroll', this.handleScroll, false);
 
-    this.dragStartX          = undefined;
-    this.dragStartScrollLeft = undefined;
-    this.dragStartTime       = undefined;
-    this.isDrag              = false;
-
-    this.handleMousedown = this.handleMousedown.bind(this);
-    this.dom.addEventListener('mousedown', this.handleMousedown, false);
-
-    this.handleMousemove = this.handleMousemove.bind(this);
-    this.dom.addEventListener('mousemove', this.handleMousemove, false);
-
-    this.handleMouseup = this.handleMouseup.bind(this);
-    this.dom.addEventListener('mouseup', this.handleMouseup, false);
-    this.dom.addEventListener('mouseleave', this.handleMouseup, false);
-
     // Slides active/inactive ovserver
     if ('undefined' !== typeof IntersectionObserver) {
       const activeSlideIdsObserver = new IntersectionObserver(
@@ -56,12 +41,6 @@ export class SlideCanvas extends abstractCanvas {
     }
   }
 
-  beforeInit() {
-  }
-
-  afterInit() {
-  }
-
   handleScroll() {
     clearTimeout(this.canvasScrollTimerId);
     if (this.isDrag) {
@@ -83,36 +62,14 @@ export class SlideCanvas extends abstractCanvas {
   }
 
   handleMousedown(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
     clearTimeout(this.canvasScrollTimerId);
-
-    this.dragStartX          = event.clientX;
-    this.dragStartScrollLeft = this.scrollLeft();
-    this.dragStartTime       = new Date;
-    this.isDrag              = true;
   }
 
   handleMousemove(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (! this.isDrag) {
-      return;
-    }
-
     this.setScrollLeft(this.dragStartScrollLeft + this.dragStartX - event.clientX);
   }
 
   handleMouseup(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (! this.isDrag) {
-      return;
-    }
-
     const dragEndTime   = new Date;
     const timeTaken     = dragEndTime.getTime() - this.dragStartTime.getTime();
     const distanceMoved = event.clientX - this.dragStartX;
@@ -121,12 +78,9 @@ export class SlideCanvas extends abstractCanvas {
       const newLeft = this.scrollLeft() - (distanceMoved / timeTaken) * 100;
       this.moveToLeft(newLeft);
     }
+  }
 
-    this.dragStartX          = undefined;
-    this.dragStartScrollLeft = undefined;
-    this.dragStartTime       = undefined;
-    this.isDrag              = false;
-
+  afterHandleMouseup() {
     this.handleScroll();
   }
 

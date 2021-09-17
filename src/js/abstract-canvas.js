@@ -8,15 +8,20 @@ const abstractMethodOverrideError = (methodName) => {
 
 export class abstractCanvas {
   constructor(target, args) {
-    this.dom    = target;
-    this.args   = args;
-    this.slides = [].slice.call(this.dom.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
+    this.dom                   = target;
+    this.args                  = args;
+    this.slides                = [].slice.call(this.dom.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
     this.historyActiveSlideIds = [];
+
+    this.dragStartX          = undefined;
+    this.dragStartScrollLeft = undefined;
+    this.dragStartTime       = undefined;
+    this.isDrag              = false;
 
     // If CSS is applied, the number of elements will be 1.
     let initNumberOfRetrys = 10;
-    let initTimerId = undefined;
-    const init = () => {
+    let initTimerId        = undefined;
+    const init             = () => {
       clearTimeout(initTimerId);
 
       const arrayUnique   = (array) => array.filter((value, index) => index === array.lastIndexOf(value));
@@ -27,6 +32,12 @@ export class abstractCanvas {
         initNumberOfRetrys --;
         return;
       }
+
+      this.dragStartX          = undefined;
+      this.dragStartScrollLeft = undefined;
+      this.dragStartTime       = undefined;
+      this.isDrag              = false;
+      this.dom.classList.remove('is-dragging');
 
       this.setWidth('');
       this.beforeInit();
@@ -62,7 +73,72 @@ export class abstractCanvas {
         attributeFilter: ['data-current']
       }
     );
+
+    this._handleMousedown = this._handleMousedown.bind(this);
+    this.dom.addEventListener('mousedown', this._handleMousedown, false);
+
+    this._handleMousemove = this._handleMousemove.bind(this);
+    this.dom.addEventListener('mousemove', this._handleMousemove, false);
+
+    this._handleMouseup = this._handleMouseup.bind(this);
+    this.dom.addEventListener('mouseup', this._handleMouseup, false);
+    this.dom.addEventListener('mouseleave', this._handleMouseup, false);
   }
+
+  _handleMousedown(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    this.dragStartX          = event.clientX;
+    this.dragStartScrollLeft = this.scrollLeft();
+    this.dragStartTime       = new Date;
+    this.isDrag              = true;
+
+    this.handleMousedown(event);
+  }
+
+  handleMousedown(event) {
+  }
+
+  _handleMousemove(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (! this.isDrag) {
+      return;
+    }
+
+    this.dom.classList.add('is-dragging');
+    this.handleMousemove(event);
+  }
+
+  handleMousemove(event) {
+  }
+
+  _handleMouseup(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (! this.isDrag) {
+      return;
+    }
+
+    this.handleMouseup(event);
+
+    this.dragStartX          = undefined;
+    this.dragStartScrollLeft = undefined;
+    this.dragStartTime       = undefined;
+    this.isDrag              = false;
+    this.dom.classList.remove('is-dragging');
+
+    this.afterHandleMouseup();
+  }
+
+  handleMouseup(event) {
+  }
+
+  afterHandleMouseup() {
+  };
 
   scrollLeft() {
     return this.dom.scrollLeft;
@@ -100,15 +176,17 @@ export class abstractCanvas {
     return this.slides[ index ];
   }
 
+  setCurrentForWheel() {
+    abstractMethodOverrideError('abstractCanvas.setCurrentForWheel');
+  }
+
   moveTo(current) {
     abstractMethodOverrideError('abstractCanvas.moveTo');
   }
 
   beforeInit() {
-    abstractMethodOverrideError('abstractCanvas.beforeInit');
   }
 
   afterInit() {
-    abstractMethodOverrideError('abstractCanvas.afterInit');
   }
 }

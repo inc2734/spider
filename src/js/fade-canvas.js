@@ -7,16 +7,6 @@ export class FadeCanvas extends abstractCanvas {
   constructor(canvas, args) {
     super(canvas, args);
 
-    this.dragStartX = undefined;
-    this.isDrag     = false;
-
-    this.handleMousedown = this.handleMousedown.bind(this);
-    this.dom.addEventListener('mousedown', this.handleMousedown, false);
-
-    this.handleMouseup = this.handleMouseup.bind(this);
-    this.dom.addEventListener('mouseup', this.handleMouseup, false);
-    this.dom.addEventListener('mouseleave', this.handleMouseup, false);
-
     // Slides active/inactive ovserver
     canvas.addEventListener(
       'updateCurrent',
@@ -27,9 +17,6 @@ export class FadeCanvas extends abstractCanvas {
       },
       false
     );
-  }
-
-  beforeInit() {
   }
 
   afterInit() {
@@ -45,22 +32,7 @@ export class FadeCanvas extends abstractCanvas {
     );
   }
 
-  handleMousedown(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.dragStartX = event.clientX;
-    this.isDrag     = true;
-  }
-
   handleMouseup(event) {
-    event.preventDefault();
-    event.stopPropagation();
-
-    if (! this.isDrag) {
-      return;
-    }
-
     const distanceMoved = event.clientX - this.dragStartX;
     const current       = this.getCurrent();
 
@@ -69,9 +41,6 @@ export class FadeCanvas extends abstractCanvas {
     } else if (0 > distanceMoved) {
       this.getSlides().length - 1 > current && this.setCurrent(current + 1);
     }
-
-    this.dragStartX = undefined;
-    this.isDrag     = false;
   }
 
   moveTo(currentSlide) {

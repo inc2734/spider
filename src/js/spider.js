@@ -38,28 +38,25 @@ const newSpider = (target, options) => {
     };
 
     let autoSlideTimerId = undefined;
-    const stopAutoSlide = () => clearTimeout(autoSlideTimerId);
+
+    const stopAutoSlide = () => {
+      clearInterval(autoSlideTimerId);
+    };
+
     const startAutoSlide = (interval) => {
-      if (! canvas) {
-        return;
-      }
-
-      if (0 >= interval) {
-        return;
-      }
-
-      const autoSlide = () => {
-        const activeSlides = canvas.getSlides().filter((slide) => slide.isActive());
-        const lastSlide = [...canvas.getSlides()].pop();
-        if (activeSlides.includes(lastSlide)) {
-          this.moveTo(0);
-        } else {
-          this.next();
-        }
-        autoSlideTimerId = setTimeout(autoSlide, interval);
-      };
-
-      autoSlideTimerId = setTimeout(autoSlide, interval);
+      stopAutoSlide();
+      autoSlideTimerId = setInterval(
+        () => {
+          const activeSlides = canvas.getSlides().filter((slide) => slide.isActive());
+          const lastSlide = [...canvas.getSlides()].pop();
+          if (activeSlides.includes(lastSlide)) {
+            this.moveTo(0);
+          } else {
+            this.next();
+          }
+        },
+        interval
+      );
     };
 
     this.initialized = false;
@@ -133,20 +130,20 @@ const newSpider = (target, options) => {
       if (0 < interval) {
         startAutoSlide(interval);
 
-        _canvas.addEventListener(
-          'setCurrentForWheel',
-          () => {
-            stopAutoSlide();
-            startAutoSlide(interval);
-          },
-          false
-        );
+        // _canvas.addEventListener(
+        //   'setCurrentForWheel',
+        //   () => {
+        //     stopAutoSlide();
+        //     startAutoSlide(interval);
+        //   },
+        //   false
+        // );
 
-        ['scroll', 'mousedown'].forEach(
+        ['mousedown'].forEach(
           (type) => _canvas.addEventListener(type, () => stopAutoSlide(), false)
         );
 
-        ['scrollEnd', 'mouseup', 'mouseleave'].forEach(
+        ['mouseup', 'mouseleave'].forEach(
           (type) => _canvas.addEventListener(type, () => startAutoSlide(interval), false)
         );
       }
