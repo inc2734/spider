@@ -18,6 +18,7 @@ export class SlideCanvas extends abstractCanvas {
 
     this.dragStartX = undefined;
     this.dragStartScrollLeft = undefined;
+    this.dragStartTime = undefined;
     this.isDrag = false;
     this.handleMousedown = this.handleMousedown.bind(this);
     this.dom.addEventListener('mousedown', this.handleMousedown, false);
@@ -83,27 +84,52 @@ export class SlideCanvas extends abstractCanvas {
     event.stopPropagation();
 
     clearTimeout(this.canvasScrollTimerId);
-    this.isDrag = true;
-    this.dragStartScrollLeft = this.scrollLeft();
     this.dragStartX = event.clientX;
+    this.dragStartScrollLeft = this.scrollLeft();
+    this.dragStartTime = new Date;
+    this.isDrag = true;
   }
 
   handleMousemove(event) {
     event.preventDefault();
     event.stopPropagation();
 
-    if (this.isDrag) {
-      this.setScrollLeft(this.dragStartScrollLeft + this.dragStartX - event.clientX);
+    if (! this.isDrag) {
+      return;
     }
+
+    this.setScrollLeft(this.dragStartScrollLeft + this.dragStartX - event.clientX);
   }
 
   handleMouseup(event) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.isDrag = false;
-    this.dragStartScrollLeft = undefined;
+    if (! this.isDrag) {
+      return;
+    }
+
+    const dragEndTime = new Date;
+    const timeTaken = dragEndTime.getTime() - this.dragStartTime.getTime();
+    const distanceMoved = Math.abs(event.clientX - this.dragStartX);
+
+    if (300 > timeTaken) {
+      const direction = 0 < this.dragStartX - event.clientX ? 'next' : event.clientX !== this.dragStartX ? 'prev' : false;
+      let newLeft = false;
+      if ('next' === direction) {
+        newLeft = this.scrollLeft() + (distanceMoved / timeTaken) * 100;
+      } else if ('prev' === direction) {
+        newLeft = this.scrollLeft() - (distanceMoved / timeTaken) * 100;
+      }
+      if (false !== newLeft) {
+        this.moveToLeft(newLeft);
+      }
+    }
+
     this.dragStartX = undefined;
+    this.dragStartScrollLeft = undefined;
+    this.dragStartTime = undefined;
+    this.isDrag = false;
 
     this.handleScroll();
   }
@@ -122,14 +148,19 @@ export class SlideCanvas extends abstractCanvas {
     addCustomEvent(this.dom, 'setCurrentForWheel');
   }
 
+  moveTo(currentSlide) {
+    const start = this.scrollLeft();
+    const left  = start + (currentSlide.left() - this.left());
+    this.moveToLeft(left);
+  }
+
   /**
    * I'd really like to use this, but there are a lot of unsupported browsers, so I'll use an alternative code.
    *
    * @see https://developer.mozilla.org/ja/docs/Web/API/Element/scrollTo
    */
-  moveTo(currentSlide) {
+  moveToLeft(left) {
     const start = this.scrollLeft();
-    const left  = start + (currentSlide.left() - this.left());
 
     clearInterval(this.smoothScrollToTimerId);
 
@@ -147,15 +178,21 @@ export class SlideCanvas extends abstractCanvas {
     const easeOutCirc = (x) => Math.sqrt(1 - Math.pow(x - 1, 2));
 
     let count = 0;
+    let prevLeft = start;
     this.smoothScrollToTimerId = setInterval(
       () => {
         count += Math.abs(step);
-        this.setScrollLeft(start + range * easeOutCirc(count / Math.abs(range)))
+        const newLeft = start + range * easeOutCirc(count / Math.abs(range));
 
-        if (Math.abs(range) <= count) {
+        if (
+          'next' === direction && newLeft <= left && newLeft >= prevLeft
+          || 'prev' === direction && newLeft >= left && newLeft <= prevLeft
+        ) {
+          this.setScrollLeft(newLeft);
+          prevLeft = newLeft;
+        } else {
           clearInterval(this.smoothScrollToTimerId);
           this.setScrollLeft(left);
-          //this.dom.style.scrollSnapType = '';
         }
       },
       fps
