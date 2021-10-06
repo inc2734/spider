@@ -74,13 +74,11 @@ const newSpider = (target, options) => {
 
     const getNext = () => {
       const current = !! canvas && canvas.getCurrent();
-      console.log(current);
       if (false === current) {
         return false;
       }
 
       const lastSlide = [...canvas.getSlides()].pop();
-      console.log(lastSlide.dom);
       if (lastSlide.isActive()) {
         return false;
       }
@@ -111,8 +109,8 @@ const newSpider = (target, options) => {
         return;
       }
 
-      const _root = target.querySelector(options.root);
-      if (! _root) {
+      const _reference = target.querySelector(options.reference) || target.querySelector(options.root);
+      if (! _reference) {
         return;
       }
 
@@ -160,7 +158,7 @@ const newSpider = (target, options) => {
         _canvas,
         {
           slide: options.slide,
-          root: _root,
+          reference: _reference,
         }
       );
 
@@ -238,6 +236,7 @@ const newSpider = (target, options) => {
 export default function Spider(target, args = {}) {
   const defaultOptions = {
     root: '.spider',
+    reference: '.spider__reference',
     canvas: '.spider__canvas',
     slide: '.spider__slide',
     prevArrow: '.spider__arrow[data-direction="prev"]',

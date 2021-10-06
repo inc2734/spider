@@ -2,8 +2,11 @@
   position: relative;
 }
 
+.spider__reference {
+  box-sizing: border-box !important;
+}
+
 .spider__canvas {
-  //scroll-snap-type: x mandatory;
   overflow-scrolling: touch;
   overflow-x: scroll;
   display: flex;
