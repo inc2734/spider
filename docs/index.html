@@ -4,20 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, viewport-fit=cover">
   <script defer src="dist/js/app.js"></script>
-<!--
-  <script defer src="../dist/js/spider.js"></script>
-  <script>
-  document.addEventListener(
-    'DOMContentLoaded',
-    () => {
-      const spider = new Spider('.spider-container');
-
-      const spider2 = new Spider('#using-id-selector');
-    },
-    false
-  );
-  </script>
--->
   <link rel="stylesheet" href="dist/css/general.css">
   <link rel="stylesheet" href="dist/css/app.css">
   <style>
@@ -37,6 +23,20 @@
   .alignfull img {
     width: 100%;
     max-width: none;
+  }
+
+  .shifted .spider__canvas::before,
+  .shifted .spider__canvas::after {
+    content: '';
+    display: block;
+    flex: 0 0 auto;
+    width: calc((var(--spider-canvas-width) - var(--spider-root-width)) / 2);
+  }
+  .shifted .spider__slide {
+    max-width: calc(var(--spider-root-width) / 2 - 10px);
+  }
+  .shifted .spider__slide:not(:last-child) {
+    margin-right: 20px;
   }
   </style>
   <title>Spider</title>
@@ -721,6 +721,84 @@ var spider = new Spider('#using-id-selector');
 .alignfull img {
   width: 100%;
   max-width: none;
+}
+&lt;/style&gt;</pre>
+
+  <h2>Shifted</h2>
+  <p>
+    <strong>CSS custom properties are not support IE</strong>
+  </p>
+  <div class="spider-container shifted">
+    <div class="spider">
+      <div class="spider__canvas alignfull">
+        <div class="spider__slide" data-id="0">
+          <img class="spider__figure" src="img/blue.jpg" alt="">
+        </div>
+        <div class="spider__slide" data-id="1">
+          <img class="spider__figure" src="img/green.jpg" alt="">
+        </div>
+        <div class="spider__slide" data-id="2">
+          <img class="spider__figure" src="img/orange.jpg" alt="">
+        </div>
+        <div class="spider__slide" data-id="3">
+          <img class="spider__figure" src="img/pink.jpg" alt="">
+        </div>
+        <div class="spider__slide" data-id="4">
+          <img class="spider__figure" src="img/purple.jpg" alt="">
+        </div>
+        <div class="spider__slide" data-id="5">
+          <p>
+            <a href="https://github.com/inc2734/spider">Lorem ipsum</a> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
+          </p>
+        </div>
+      </div>
+
+      <button class="spider__arrow" data-direction="prev">Prev</button>
+      <button class="spider__arrow" data-direction="next">Next</button>
+    </div>
+
+    <div class="spider__dots">
+      <button class="spider__dot" data-id="0">0</button>
+      <button class="spider__dot" data-id="1">1</button>
+      <button class="spider__dot" data-id="2">2</button>
+      <button class="spider__dot" data-id="3">3</button>
+      <button class="spider__dot" data-id="4">4</button>
+      <button class="spider__dot" data-id="5">5</button>
+    </div>
+  </div>
+
+  <pre>&lt;div class="spider-container shifted"&gt;
+    &lt;div class="spider"&gt;
+    &lt;div class="spider__canvas alignfull"&gt;
+      &lt;div class="spider__slide"&gt;
+        &lt;img class="spider__figure" src="img/blue.jpg" alt="" data-id="0"&gt;
+      &lt;/div&gt;
+      ...
+    &lt;/div&gt;
+
+    &lt;button class="spider__arrow" data-direction="prev"&gt;Prev&lt;/button&gt;
+    &lt;button class="spider__arrow" data-direction="next"&gt;Next&lt;/button&gt;
+  &lt;/div&gt;
+
+  &lt;div class="spider__dots"&gt;
+    &lt;button class="spider__dot" data-id="0"&gt;0&lt;/button&gt;
+    ...
+  &lt;/div&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+.shifted .spider__canvas::before,
+.shifted .spider__canvas::after {
+  content: '';
+  display: block;
+  flex: 0 0 auto;
+  width: calc((var(--spider-canvas-width) - var(--spider-root-width)) / 2);
+}
+.shifted .spider__slide {
+  max-width: calc(var(--spider-root-width) / 2 - 10px);
+}
+.shifted .spider__slide:not(:last-child) {
+  margin-right: 20px;
 }
 &lt;/style&gt;</pre>
 

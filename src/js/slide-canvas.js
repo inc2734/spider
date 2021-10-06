@@ -32,7 +32,7 @@ export class SlideCanvas extends abstractCanvas {
         {
           root: this.dom,
           rootMargin: "0px -1.5px",
-          threshold: [0.5, 1],
+          threshold: [0.75, 1],
         }
       );
       this.slides.forEach((slide) => {
@@ -100,8 +100,16 @@ export class SlideCanvas extends abstractCanvas {
 
   moveTo(currentSlide) {
     const start = this.scrollLeft();
-    const left  = start + (currentSlide.left() - this.left());
-    this.moveToLeft(left);
+    const maxScrollVoulme = this.scrollWidth() - this.offsetWidth();
+
+    let goto = start + (currentSlide.left() - this.left());
+    if (maxScrollVoulme < goto) {
+      goto = maxScrollVoulme;
+    } else if (0 > goto) {
+      goto = 0;
+    }
+
+    this.moveToLeft(goto);
   }
 
   /**
@@ -122,17 +130,17 @@ export class SlideCanvas extends abstractCanvas {
     if (0 === range) return;
 
     const step = range / fps; // Scrolling volume per interval
+    const durationPerDistance = 1000;
 
-    //this.dom.style.scrollSnapType = 'none';
-
-    const easeOutCirc = (x) => Math.sqrt(1 - Math.pow(x - 1, 2));
+    // @see https://www.geeksforgeeks.org/fabric-js-easeoutcirc-method/
+    const easeOutCirc = (duration, startValue, displacement, interval) => displacement * Math.sqrt(1 - (duration = duration / interval - 1) * duration) + startValue;
 
     let count = 0;
     let prevLeft = start;
     this.smoothScrollToTimerId = setInterval(
       () => {
         count += Math.abs(step);
-        const newLeft = start + range * easeOutCirc(count / Math.abs(range));
+        const newLeft = easeOutCirc(count, start, range, durationPerDistance * Math.abs(range / 750));
 
         if (
           'next' === direction && newLeft <= left && newLeft >= prevLeft

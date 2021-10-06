@@ -41,8 +41,12 @@ export class abstractCanvas {
 
       this.setWidth('');
       this.beforeInit();
-      this.setWidth(`${ Math.floor(this.offsetWidth()) }px`);
+
+      const width = `${ Math.floor(this.offsetWidth()) }px`;
+      this.setWidth(width);
       this.setCurrent(0);
+      this.dom.style.setProperty('--spider-root-width', `${ Math.floor(this.args.root.offsetWidth) }px`);
+      this.dom.style.setProperty('--spider-canvas-width', width);
       this.afterInit();
     };
     init();
@@ -148,8 +152,12 @@ export class abstractCanvas {
     return this.dom.offsetWidth;
   }
 
+  scrollWidth() {
+    return this.dom.scrollWidth;
+  }
+
   left() {
-    return this.dom.getBoundingClientRect().left;
+    return this.args.root.getBoundingClientRect().left;
   }
 
   right() {

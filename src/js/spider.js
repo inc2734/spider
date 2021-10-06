@@ -59,6 +59,38 @@ const newSpider = (target, options) => {
       );
     };
 
+    const getPrev = () => {
+      const current = !! canvas && canvas.getCurrent();
+      if (false === current) {
+        return false;
+      }
+
+      if (0 === current) {
+        return false;
+      }
+
+      return current - 1;
+    };
+
+    const getNext = () => {
+      const current = !! canvas && canvas.getCurrent();
+      console.log(current);
+      if (false === current) {
+        return false;
+      }
+
+      const lastSlide = [...canvas.getSlides()].pop();
+      console.log(lastSlide.dom);
+      if (lastSlide.isActive()) {
+        return false;
+      }
+      if (current === lastSlide.getId()) {
+        return false;
+      }
+
+      return current + 1;
+    };
+
     this.initialized = false;
 
     this.destroy = () => {
@@ -76,6 +108,11 @@ const newSpider = (target, options) => {
 
       const _canvas = target.querySelector(options.canvas);
       if (! _canvas) {
+        return;
+      }
+
+      const _root = target.querySelector(options.root);
+      if (! _root) {
         return;
       }
 
@@ -123,21 +160,13 @@ const newSpider = (target, options) => {
         _canvas,
         {
           slide: options.slide,
+          root: _root,
         }
       );
 
       const interval = getInterval();
       if (0 < interval) {
         startAutoSlide(interval);
-
-        // _canvas.addEventListener(
-        //   'setCurrentForWheel',
-        //   () => {
-        //     stopAutoSlide();
-        //     startAutoSlide(interval);
-        //   },
-        //   false
-        // );
 
         ['mousedown'].forEach(
           (type) => _canvas.addEventListener(type, () => stopAutoSlide(), false)
@@ -176,35 +205,21 @@ const newSpider = (target, options) => {
     };
 
     this.prev = () => {
-      const current = !! canvas && canvas.getCurrent();
-      if (false === current) {
+      const prev = getPrev();
+      if (false === typeof prev) {
         return;
       }
 
-      if (0 === current) {
-        return;
-      }
-
-      const goto = current - 1;
-      this.moveTo(goto);
+      this.moveTo(prev);
     };
 
     this.next = () => {
-      const current = !! canvas && canvas.getCurrent();
-      if (false === current) {
+      const next = getNext();
+      if (false === typeof next) {
         return;
       }
 
-      const lastSlide = [...canvas.getSlides()].pop();
-      if (lastSlide.isActive()) {
-        return;
-      }
-      if (current === lastSlide.getId()) {
-        return;
-      }
-
-      const goto = current + 1;
-      this.moveTo(goto);
+      this.moveTo(next);
     };
 
     this.moveTo = (index) => {
@@ -222,6 +237,7 @@ const newSpider = (target, options) => {
  */
 export default function Spider(target, args = {}) {
   const defaultOptions = {
+    root: '.spider',
     canvas: '.spider__canvas',
     slide: '.spider__slide',
     prevArrow: '.spider__arrow[data-direction="prev"]',
