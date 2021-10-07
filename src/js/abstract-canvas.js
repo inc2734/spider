@@ -45,8 +45,8 @@ export class abstractCanvas {
       const width = `${ Math.floor(this.offsetWidth()) }px`;
       this.setWidth(width);
       this.setCurrent(0);
-      this.dom.style.setProperty('--spider-reference-width', `${ this.referenceWidth() }px`);
-      this.dom.style.setProperty('--spider-canvas-width', width);
+      this.args.container.setProperty('--spider-reference-width', `${ this.referenceWidth() }px`);
+      this.args.container.setProperty('--spider-canvas-width', width);
       this.afterInit();
     };
     init();

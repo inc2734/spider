@@ -42,10 +42,26 @@
   max-height: none;
 }
 
-.spider__arrow {
+.spider__arrows {
+  pointer-events: none;
+  display: flex;
+  justify-content: space-between;
+
+  .spider__arrow {
+    pointer-events: initial;
+  }
+}
+
+.spider > .spider__arrows {
   position: absolute;
   top: calc(50% - 24px);
+  left: 0;
+  right: 0;
   z-index: 1;
+}
+
+.spider__arrow {
+  position: relative;
   background-color: transparent;
   border: none;
   border-radius: 0;
@@ -92,6 +108,12 @@
       transform: rotate(45deg);
     }
   }
+}
+
+.spider > .spider__arrow {
+  position: absolute;
+  z-index: 1;
+  top: calc(50% - 24px);
 }
 
 .spider__dots {

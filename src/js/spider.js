@@ -6,6 +6,33 @@ import { PrevArrow } from './prev-arrow';
 import { NextArrow } from './next-arrow';
 import { Dot } from './dot';
 
+function spiderContainer(target) {
+  if (! target) {
+    return;
+  }
+
+  this.dom = target;
+
+  this.getInterval = () => {
+    return Number(this.dom.getAttribute('data-interval'));
+  };
+
+  this.getFade = () => {
+    return 'true' === this.dom.getAttribute('data-fade');
+  };
+
+  this.setInitialized = (value) => {
+    if (!! value) {
+      addCustomEvent(this.dom, 'initialized');
+    }
+    return this.dom.setAttribute('data-initialized', !! value ? 'true' : 'false');
+  };
+
+  this.setProperty = (property, value) => {
+    this.dom.style.setProperty(property, value);
+  };
+}
+
 const newSpiders = (sliders, options) => {
   const spiders = [];
 
@@ -28,14 +55,6 @@ const newSpider = (target, options) => {
     let canvas    = undefined;
     let prevArrow = undefined;
     let nextArrow = undefined;
-
-    const getInterval = () => {
-      return Number(target.getAttribute('data-interval'));
-    };
-
-    const getFade = () => {
-      return 'true' === target.getAttribute('data-fade');
-    };
 
     let autoSlideTimerId = undefined;
 
@@ -104,6 +123,8 @@ const newSpider = (target, options) => {
         return;
       }
 
+      const container = new spiderContainer(target);
+
       const _canvas = target.querySelector(options.canvas);
       if (! _canvas) {
         return;
@@ -150,7 +171,7 @@ const newSpider = (target, options) => {
         );
       }
 
-      const canvasClass = getFade()
+      const canvasClass = container.getFade()
         ? FadeCanvas
         : SlideCanvas;
 
@@ -159,10 +180,11 @@ const newSpider = (target, options) => {
         {
           slide: options.slide,
           reference: _reference,
+          container,
         }
       );
 
-      const interval = getInterval();
+      const interval = container.getInterval();
       if (0 < interval) {
         startAutoSlide(interval);
 
@@ -198,8 +220,7 @@ const newSpider = (target, options) => {
       }
 
       this.initialized = true;
-      target.setAttribute('data-initialized', 'true');
-      addCustomEvent(target, 'initialized');
+      container.setInitialized(this.initialized);
     };
 
     this.prev = () => {
