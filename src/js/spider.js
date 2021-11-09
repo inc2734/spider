@@ -17,6 +17,10 @@ function spiderContainer(target) {
     return Number(this.dom.getAttribute('data-interval'));
   };
 
+  this.getDuration = () => {
+    return Number(this.dom.getAttribute('data-duration'));
+  };
+
   this.getFade = () => {
     return 'true' === this.dom.getAttribute('data-fade');
   };
@@ -148,7 +152,7 @@ const newSpider = (target, options) => {
 
               this.prev();
 
-              const interval = getInterval();
+              const interval = container.getInterval();
               0 < interval && startAutoSlide(interval);
             },
           }
@@ -164,7 +168,7 @@ const newSpider = (target, options) => {
 
               this.next();
 
-              const interval = getInterval();
+              const interval = container.getInterval();
               0 < interval && startAutoSlide(interval);
             },
           }
@@ -210,7 +214,7 @@ const newSpider = (target, options) => {
 
                   this.moveTo(event.currentTarget.getAttribute('data-id'));
 
-                  const interval = getInterval();
+                  const interval = container.getInterval();
                   0 < interval && startAutoSlide(interval);
                 },
               }

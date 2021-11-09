@@ -48,6 +48,9 @@ export class FadeCanvas extends abstractCanvas {
       return;
     }
 
+    const duration = this.args.container.getDuration() || 200;
+    this.dom.style.setProperty('--spider-duration', `${ duration / 1000 }s`);
+
     const visibleSlides = [].slice.call(
       this.dom.querySelectorAll('[data-active="false"]')
     ).map((slide) => new Slide(slide));

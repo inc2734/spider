@@ -130,7 +130,7 @@ export class SlideCanvas extends abstractCanvas {
     if (0 === range) return;
 
     const step = range / fps; // Scrolling volume per interval
-    const durationPerDistance = 1000;
+    const durationPerDistance = this.args.container.getDuration() || 1000;
 
     // @see https://www.geeksforgeeks.org/fabric-js-easeoutcirc-method/
     const easeOutCirc = (duration, startValue, displacement, interval) => displacement * Math.sqrt(1 - (duration = duration / interval - 1) * duration) + startValue;

@@ -173,7 +173,10 @@
     position: relative !important;
     max-width: 100% !important;
     width: 100% !important;
-    transition: opacity .2s ease-in, visibility .2s ease-in;
+    transition-duration: .2s; // For IE11
+    transition-duration: var(--spider-duration);
+    transition-property: opacity, visibility;
+    transition-timing-function: ease-in;
     opacity: 0;
     visibility: hidden;
 
