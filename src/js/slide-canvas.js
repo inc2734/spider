@@ -38,6 +38,27 @@ export class SlideCanvas extends abstractCanvas {
       this.slides.forEach((slide) => {
         activeSlideIdsObserver.observe(slide.dom);
       });
+
+      const visibleSlideIdsObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const slide = new Slide(entry.target);
+            if (entry.isIntersecting) {
+              slide.visible();
+            } else {
+              slide.invisible();
+            }
+          });
+        },
+        {
+          root: this.dom,
+          rootMargin: "0px -1px",
+          threshold: [0],
+        }
+      );
+      this.slides.forEach((slide) => {
+        visibleSlideIdsObserver.observe(slide.dom);
+      });
     }
   }
 

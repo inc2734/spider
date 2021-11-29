@@ -33,6 +33,13 @@
   scroll-snap-align: start !important;
 	flex: 1 0 100% !important;
   max-width: 100%;
+  opacity: 0;
+  visibility: hidden;
+
+  &[data-visible="true"] {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 
 .spider__figure {
@@ -177,8 +184,6 @@
     transition-duration: var(--spider-duration);
     transition-property: opacity, visibility;
     transition-timing-function: ease-in;
-    opacity: 0;
-    visibility: hidden;
 
     &[data-active="true"] {
       z-index: 1;

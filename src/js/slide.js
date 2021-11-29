@@ -34,7 +34,15 @@ export function Slide(target) {
   }
 
   this.inactive = () => {
-    this.dom.removeAttribute('data-active', 'true');
+    this.dom.removeAttribute('data-active');
+  }
+
+  this.visible = () => {
+    this.dom.setAttribute('data-visible', 'true');
+  }
+
+  this.invisible = () => {
+    this.dom.removeAttribute('data-visible');
   }
 
   this.isActive = () => {
