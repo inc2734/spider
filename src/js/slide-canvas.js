@@ -154,14 +154,20 @@ export class SlideCanvas extends abstractCanvas {
     const durationPerDistance = this.args.container.getDuration() || 1000;
 
     // @see https://www.geeksforgeeks.org/fabric-js-easeoutcirc-method/
-    const easeOutCirc = (duration, startValue, displacement, interval) => displacement * Math.sqrt(1 - (duration = duration / interval - 1) * duration) + startValue;
+    // const easeOutCirc = (duration, startValue, displacement, interval) => displacement * Math.sqrt(1 - (duration = duration / interval - 1) * duration) + startValue;
+
+    // @see https://www.geeksforgeeks.org/fabric-js-easeoutcubic-method/
+    // const easeOutCubic = (duration, startValue, displacement, interval) => displacement * ((duration = duration / interval - 1) * duration * duration + 1) + startValue;
+
+    // @see https://www.geeksforgeeks.org/fabric-js-easeoutquad-method/
+    const easeOutQuad = (duration, startValue, displacement, interval) => -displacement * (duration /= interval) * (duration - 2) + startValue;
 
     let count = 0;
     let prevLeft = start;
     this.smoothScrollToTimerId = setInterval(
       () => {
         count += Math.abs(step);
-        const newLeft = easeOutCirc(count, start, range, durationPerDistance * Math.abs(range / 750));
+        const newLeft = easeOutQuad(count, start, range, durationPerDistance * Math.abs(range / 750));
 
         if (
           'next' === direction && newLeft <= left && newLeft >= prevLeft

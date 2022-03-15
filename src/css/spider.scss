@@ -34,11 +34,10 @@
 	flex: 1 0 100% !important;
   max-width: 100%;
   opacity: 0;
-  visibility: hidden;
+  transition: opacity .05s;
 
   &[data-visible="true"] {
     opacity: 1;
-    visibility: visible;
   }
 }
 
