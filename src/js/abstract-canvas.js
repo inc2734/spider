@@ -51,7 +51,14 @@ export class abstractCanvas {
     };
     init();
 
-    window.addEventListener('resize', () => setTimeout(init, 250), false);
+    let documentWidth = document.body.clientWidth;
+    window.addEventListener('resize', () => {
+      const newDocumentWidth = document.body.clientWidth;
+      if (documentWidth !== newDocumentWidth) {
+        documentWidth = newDocumentWidth;
+        setTimeout(init, 250);
+      }
+    }, false);
 
     const observer = new MutationObserver(
       () => {
