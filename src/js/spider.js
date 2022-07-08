@@ -89,10 +89,18 @@ const newSpider = (target, options) => {
       }
 
       if (0 === current) {
-        return false;
+        const lastSlide = canvas.getSlides().length - 1;
+        return lastSlide;
       }
 
-      return current - 1;
+      let prev;
+      [...canvas.getSlides()].some((slide, index) => {
+        if (slide.isActive()) {
+          prev = index - 1;
+          return true;
+        }
+      });
+      return prev;
     };
 
     const getNext = () => {
@@ -103,13 +111,17 @@ const newSpider = (target, options) => {
 
       const lastSlide = [...canvas.getSlides()].pop();
       if (lastSlide.isActive()) {
-        return false;
-      }
-      if (current === lastSlide.getId()) {
-        return false;
+        return 0;
       }
 
-      return current + 1;
+      let next;
+      [...canvas.getSlides()].some((slide, index) => {
+        if (slide.isActive()) {
+          next = index + 1;
+          return true;
+        }
+      });
+      return next;
     };
 
     this.initialized = false;
