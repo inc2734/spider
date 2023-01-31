@@ -42,9 +42,12 @@ const newSpiders = (sliders, options) => {
 
   [].slice.call(sliders).forEach(
     (slider) => {
-      const spider = new Spider(slider, options);
-      if (!! spider.initialized) {
-        spiders.push(spider);
+      const initialized = slider.getAttribute('data-initialized');
+      if ('false' === initialized || ! initialized) {
+        const spider = new Spider(slider, options);
+        if (!! spider.initialized) {
+          spiders.push(spider);
+        }
       }
     }
   );
