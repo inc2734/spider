@@ -78,7 +78,7 @@ export class SlideCanvas extends abstractCanvas {
         }
         addCustomEvent(this.dom, 'scrollEnd');
       },
-      500
+      250
     );
   }
 
@@ -126,7 +126,7 @@ export class SlideCanvas extends abstractCanvas {
     let goto = start + (currentSlide.left() - this.left());
     if (maxScrollVoulme < goto) {
       goto = maxScrollVoulme;
-    } else if (0 > goto) {
+    } else if (0 > goto || 0 === currentSlide.getId()) {
       goto = 0;
     }
 
