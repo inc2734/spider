@@ -179,7 +179,8 @@ export class abstractCanvas {
     const referenceWidth       = this.referenceWidth();
     const referenceOffsetWidth = this.referenceOffsetWidth();
     const referenceLeft        = this.referenceLeft();
-    return referenceLeft + ((referenceOffsetWidth - referenceWidth) / 2);
+    const canvasPadding        = this.slides[0].left() - referenceLeft + this.scrollLeft();
+    return referenceLeft + ((referenceOffsetWidth - referenceWidth) / 2) + canvasPadding;
   }
 
   setWidth(width) {
