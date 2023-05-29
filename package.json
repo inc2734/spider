@@ -1,6 +1,6 @@
 {
   "name": "@inc2734/spider",
-  "version": "0.0.35",
+  "version": "0.0.36",
   "author": "inc2734",
   "license": "MIT",
   "repository": {
@@ -15,26 +15,26 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=10.0.0",
+    "node": ">=14.0.0",
     "npm": ">=6.9.0 <7"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.8",
-    "@babel/preset-env": "^7.21.5",
+    "@babel/core": "^7.22.1",
+    "@babel/preset-env": "^7.22.4",
     "@inc2734/add-custom-event": "^0.5.0",
     "@rollup/plugin-babel": "^6.0.3",
     "@rollup/plugin-node-resolve": "^15.0.2",
-    "@wordpress/browserslist-config": "^5.16.0",
+    "@wordpress/browserslist-config": "^5.17.0",
     "autoprefixer": "^10.4.14",
     "browser-sync": "^2.29.3",
-    "browserslist": "^4.21.5",
+    "browserslist": "^4.21.7",
     "cssnano": "^6.0.1",
-    "node-sass": "^8.0.0",
+    "node-sass": "^9.0.0",
     "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.23",
+    "postcss": "^8.4.24",
     "postcss-cli": "^10.1.0",
     "rimraf": "^5.0.1",
-    "rollup": "^3.22.0",
+    "rollup": "^3.23.0",
     "rollup-plugin-uglify": "^6.0.4"
   },
   "scripts": {
