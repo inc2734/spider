@@ -42,7 +42,8 @@ export class abstractCanvas {
       this.setWidth('');
       this.beforeInit();
 
-      const width = `${ Math.floor(this.offsetWidth()) }px`;
+      // const width = `${ Math.floor(this.offsetWidth()) }px`;
+      const width = this.contentWidth();
       this.setWidth(width);
       this.setCurrent(0);
       this.args.container.setProperty('--spider-reference-width', `${ this.referenceWidth() }px`);
@@ -153,6 +154,10 @@ export class abstractCanvas {
 
   scrollLeft() {
     return this.dom.scrollLeft;
+  }
+
+  contentWidth() {
+    return `calc(${ this.dom.clientWidth }px - ${ this.dom.style.paddingRight || '0px' } - ${ this.dom.style.paddingLeft || '0px' })`;
   }
 
   offsetWidth() {

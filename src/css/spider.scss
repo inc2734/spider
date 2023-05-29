@@ -10,6 +10,7 @@
   overflow-scrolling: touch;
   overflow-x: scroll;
   display: flex;
+  box-sizing: content-box !important;
 
   -ms-overflow-style: none;  // For IE and Edge
   scrollbar-width: none;  // For Firefox

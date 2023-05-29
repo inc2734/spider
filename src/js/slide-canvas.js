@@ -121,11 +121,11 @@ export class SlideCanvas extends abstractCanvas {
 
   moveTo(currentSlide) {
     const start = this.scrollLeft();
-    const maxScrollVoulme = this.scrollWidth() - this.offsetWidth();
+    const maxScrollVolume = this.scrollWidth() - this.offsetWidth();
 
     let goto = start + (currentSlide.left() - this.left());
-    if (maxScrollVoulme < goto) {
-      goto = maxScrollVoulme;
+    if (maxScrollVolume < goto) {
+      goto = maxScrollVolume;
     } else if (0 > goto || 0 === currentSlide.getId()) {
       goto = 0;
     }
