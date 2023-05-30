@@ -144,12 +144,22 @@ const newSpider = (target, options) => {
 
       const container = new spiderContainer(target);
 
+      const root = target.querySelector(options.root);
+      if (! root ) {
+        return;
+      }
+
+      const duration = container.getDuration();
+      if ( !! duration ) {
+        container.setProperty('--spider--transition-duration', `${ duration / 1000 }s`);
+      }
+
       const _canvas = target.querySelector(options.canvas);
       if (! _canvas) {
         return;
       }
 
-      const _reference = target.querySelector(options.reference) || target.querySelector(options.root);
+      const _reference = target.querySelector(options.reference) || root;
       if (! _reference) {
         return;
       }

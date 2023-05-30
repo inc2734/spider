@@ -1,3 +1,14 @@
+:root {
+  --spider--transition-duration: 1s;
+  --spider--arrow-button-size: 42px;
+  --spider--arrow-size: 10px;
+  --spider--arrow-color: #fff;
+  --spider--dots-gap: 10px;
+  --spider--dot-size: 8px;
+  --spider--dot-color: #ccc;
+  --spider--dot-current-color: #333;
+}
+
 .spider {
   position: relative;
 }
@@ -35,7 +46,6 @@
 	flex: 1 0 100% !important;
   max-width: 100%;
   opacity: 0;
-  transition: opacity .05s;
 
   &[data-visible="true"] {
     opacity: 1;
@@ -61,7 +71,7 @@
 
 .spider > .spider__arrows {
   position: absolute;
-  top: calc(50% - 24px);
+  top: calc(50% - var(--spider--arrow-button-size) / 2);
   left: 0;
   right: 0;
   z-index: 1;
@@ -74,8 +84,8 @@
   border-radius: 0;
   font-size: 0 !important;
   line-height: 0 !important;
-  height: 42px;
-  width: 42px;
+  height: var(--spider--arrow-button-size);
+  width: var(--spider--arrow-button-size);
   padding: 0;
   cursor: pointer;
   outline: none;
@@ -84,8 +94,8 @@
     position: absolute;
     content: '';
     display: block;
-    height: 10px;
-    width: 10px;
+    height: var(--spider--arrow-size);
+    width: var(--spider--arrow-size);
   }
 
   &:active {
@@ -96,10 +106,10 @@
     left: 0;
 
     &::before {
-      top: calc(50% - 5px);
-      left: calc(50% - 5px);
-      border-bottom: 1px solid #fff;
-      border-left: 1px solid #fff;
+      top: calc(50% - var(--spider--arrow-size) / 2);
+      left: calc(50% - var(--spider--arrow-size) / 2);
+      border-bottom: 1px solid var(--spider--arrow-color);
+      border-left: 1px solid var(--spider--arrow-color);
       transform: rotate(45deg);
     }
   }
@@ -108,10 +118,10 @@
     right: 0;
 
     &::before {
-      right: calc(50% - 5px);
-      bottom: calc(50% - 5px);
-      border-top: 1px solid #fff;
-      border-right: 1px solid #fff;
+      right: calc(50% - var(--spider--arrow-size) / 2);
+      bottom: calc(50% - var(--spider--arrow-size) / 2);
+      border-top: 1px solid var(--spider--arrow-color);
+      border-right: 1px solid var(--spider--arrow-color);
       transform: rotate(45deg);
     }
   }
@@ -120,18 +130,13 @@
 .spider > .spider__arrow {
   position: absolute;
   z-index: 1;
-  top: calc(50% - 24px);
+  top: calc(50% - var(--spider--arrow-button-size) / 2);
 }
 
 .spider__dots {
   display: flex;
+  gap: var(--spider--dots-gap);
   justify-content: center;
-  margin-right: -5px;
-  margin-left: -5px;
-
-  .spider__dot {
-    margin: 0 5px;
-  }
 
   .spider + & {
     margin-top: 1em;
@@ -147,15 +152,15 @@
 
   &:not([data-thumbnails="true"]) {
     .spider__dot {
-      background-color: #ccc;
+      background-color: var(--spider--dot-color);
       border-radius: 100%;
       font-size: 0;
       line-height: 0;
-      height: 8px;
-      width: 8px;
+      height: var(--spider--dot-size);
+      width: var(--spider--dot-size);
 
       &[aria-current="true"] {
-        background-color: #333;
+        background-color: var(--spider--dot-current-color);
       }
     }
   }
@@ -171,6 +176,8 @@
 }
 
 [data-fade="true"] {
+  --spider--transition-duration: .2s;
+
   .spider__canvas {
     position: relative !important;
     overflow-x: hidden;
@@ -180,8 +187,7 @@
     position: relative !important;
     max-width: 100% !important;
     width: 100% !important;
-    transition-duration: .2s; // For IE11
-    transition-duration: var(--spider-duration);
+    transition-duration: var(--spider--transition-duration);
     transition-property: opacity, visibility;
     transition-timing-function: ease-in;
 
