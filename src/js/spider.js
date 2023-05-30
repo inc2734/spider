@@ -264,7 +264,21 @@ const newSpider = (target, options) => {
       !! canvas && !! canvas.getSlide(index) && canvas.setCurrent(index);
     };
 
-    this.init();
+    const initObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            this.init();
+            initObserver.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: "500px",
+        threshold: [0],
+      }
+    );
+    initObserver.observe(target);
     return this;
   }
 };
