@@ -62,11 +62,17 @@ export class SlideCanvas extends abstractCanvas {
     }
   }
 
+  afterInit() {
+    this.dom.classList.remove('is-scrolling');
+  }
+
   handleScroll() {
     clearTimeout(this.canvasScrollTimerId);
     if (this.isDrag) {
       return;
     }
+
+    this.dom.classList.add('is-scrolling');
 
     this.canvasScrollTimerId = setTimeout(
       () => {
@@ -77,6 +83,7 @@ export class SlideCanvas extends abstractCanvas {
           this.setCurrentForWheel();
         }
         addCustomEvent(this.dom, 'scrollEnd');
+        this.dom.classList.remove('is-scrolling');
       },
       250
     );

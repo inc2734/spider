@@ -20,6 +20,8 @@ export class FadeCanvas extends abstractCanvas {
   }
 
   afterInit() {
+    this.dom.classList.remove('is-fading');
+
     this.slides.forEach(
       (slide, index) => {
         if (0 === index) {
@@ -48,6 +50,8 @@ export class FadeCanvas extends abstractCanvas {
       return;
     }
 
+    this.dom.classList.add('is-fading');
+
     const visibleSlides = [].slice.call(
       this.dom.querySelectorAll('[data-active="false"]')
     ).map((slide) => new Slide(slide));
@@ -58,6 +62,7 @@ export class FadeCanvas extends abstractCanvas {
     const fadeEnd = () => {
       currentSlide.dom.removeEventListener('transitionend', fadeEnd, false);
       addCustomEvent(this.dom, 'fadeEnd');
+      this.dom.classList.remove('is-fading');
     };
     currentSlide.dom.addEventListener('transitionend', fadeEnd, false);
   }
