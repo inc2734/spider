@@ -39,15 +39,13 @@ export class abstractCanvas {
       this.isDrag              = false;
       this.dom.classList.remove('is-dragging');
 
-      this.setWidth('');
       this.beforeInit();
 
       // const width = `${ Math.floor(this.offsetWidth()) }px`;
       const width = this.contentWidth();
-      this.setWidth(width);
       this.setCurrent(0);
-      this.args.container.setProperty('--spider-reference-width', `${ this.referenceWidth() }px`);
-      this.args.container.setProperty('--spider-canvas-width', width);
+      this.args.container.setProperty('--spider--reference-width', `${ this.referenceWidth() }px`);
+      this.args.container.setProperty('--spider--canvas-width', width);
       this.afterInit();
     };
     init();
@@ -157,7 +155,15 @@ export class abstractCanvas {
   }
 
   contentWidth() {
-    return `calc(${ this.dom.clientWidth }px - ${ this.dom.style.paddingRight || '0px' } - ${ this.dom.style.paddingLeft || '0px' })`;
+    if ( this.dom.style.paddingRight && this.dom.style.paddingLeft ) {
+      return `calc(${ this.dom.clientWidth }px - ${ this.dom.style.paddingRight } - ${ this.dom.style.paddingLeft })`;
+    } else if ( this.dom.style.paddingRight ) {
+      return `calc(${ this.dom.clientWidth }px - ${ this.dom.style.paddingRight })`;
+    } else if ( this.dom.style.paddingLeft ) {
+      return `calc(${ this.dom.clientWidth }px - ${ this.dom.style.paddingLeft })`;
+    } else {
+      return `${ this.dom.clientWidth }px`;
+    }
   }
 
   offsetWidth() {
@@ -186,10 +192,6 @@ export class abstractCanvas {
     const referenceLeft        = this.referenceLeft();
     const canvasPadding        = this.slides[0].left() - referenceLeft + this.scrollLeft();
     return referenceLeft + ((referenceOffsetWidth - referenceWidth) / 2) + canvasPadding;
-  }
-
-  setWidth(width) {
-    this.dom.style.width = width;
   }
 
   setCurrent(index) {

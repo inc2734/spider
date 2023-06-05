@@ -18,10 +18,14 @@
 }
 
 .spider__canvas {
+  --spider--canvas-width: var(--spider-canvas-width); // @deprecated
+  --spider--reference-width: var(--spider-reference-width); // @deprecated
+
   overflow-scrolling: touch;
   overflow-x: scroll;
   display: flex;
   box-sizing: content-box !important;
+  width: var(--spider--canvas-width);
 
   -ms-overflow-style: none;  // For IE and Edge
   scrollbar-width: none;  // For Firefox
