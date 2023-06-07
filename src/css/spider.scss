@@ -22,7 +22,7 @@
   --spider--reference-width: var(--spider-reference-width); // @deprecated
 
   overflow-scrolling: touch;
-  overflow-x: scroll;
+  overflow: scroll hidden;
   display: flex;
   box-sizing: content-box !important;
   width: var(--spider--canvas-width);
