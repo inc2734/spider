@@ -9,10 +9,6 @@ export function Dot(target, args) {
     target.removeAttribute('aria-current');
   }
 
-  this.getId = () => {
-    return Number(target.getAttribute('data-id'));
-  }
-
   args.initial ? this.active() : this.inactive();
   target.addEventListener('click', (event) => args.handleClick(event), false);
 

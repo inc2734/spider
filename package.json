@@ -15,27 +15,27 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=14.0.0",
-    "npm": ">=6.9.0 <7"
+    "node": ">=16.0.0",
+    "npm": ">=8 <9"
   },
   "devDependencies": {
-    "@babel/core": "^7.22.1",
-    "@babel/preset-env": "^7.22.4",
+    "@babel/core": "^7.23.7",
+    "@babel/preset-env": "^7.23.8",
     "@inc2734/add-custom-event": "^0.5.0",
-    "@rollup/plugin-babel": "^6.0.3",
-    "@rollup/plugin-node-resolve": "^15.0.2",
-    "@wordpress/browserslist-config": "^5.17.0",
-    "autoprefixer": "^10.4.14",
-    "browser-sync": "^2.29.3",
-    "browserslist": "^4.21.7",
-    "cssnano": "^6.0.1",
+    "@rollup/plugin-babel": "^6.0.4",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@wordpress/browserslist-config": "^5.32.0",
+    "autoprefixer": "^10.4.17",
+    "browser-sync": "^3.0.2",
+    "browserslist": "^4.22.2",
+    "cssnano": "^6.0.3",
     "node-sass": "^9.0.0",
     "npm-run-all": "^4.1.5",
-    "postcss": "^8.4.24",
-    "postcss-cli": "^10.1.0",
-    "rimraf": "^5.0.1",
-    "rollup": "^3.23.0",
-    "rollup-plugin-uglify": "^6.0.4"
+    "postcss": "^8.4.33",
+    "postcss-cli": "^11.0.0",
+    "rimraf": "^5.0.5",
+    "rollup": "^4.9.6"
   },
   "scripts": {
     "start": "npm run build",
@@ -56,6 +56,5 @@
     "zip:pack": "rsync -a --exclude='/node_modules' --exclude='.*' --exclude='*.config.js' --exclude='package*.json' . spider && cd spider",
     "zip:archive": "zip -9 -qmr spider.zip spider",
     "zip": "npm run clean:zip && npm run zip:pack && npm run zip:archive"
-  },
-  "dependencies": {}
+  }
 }

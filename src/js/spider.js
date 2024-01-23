@@ -25,6 +25,10 @@ function spiderContainer(target) {
     return 'true' === this.dom.getAttribute('data-fade');
   };
 
+  this.getShuffle = () => {
+    return 'true' === this.dom.getAttribute('data-shuffle');
+  };
+
   this.setInitialized = (value) => {
     if (!! value) {
       addCustomEvent(this.dom, 'initialized');
@@ -154,9 +158,24 @@ const newSpider = (target, options) => {
         container.setProperty('--spider--transition-duration', `${ duration / 1000 }s`);
       }
 
-      const _canvas = target.querySelector(options.canvas);
+      let _canvas = target.querySelector(options.canvas);
       if (! _canvas) {
         return;
+      }
+      if (container.getShuffle()) {
+        const shuffle = (array) => {
+          const newArray = [...array];
+          for (let i = newArray.length - 1; i > 0; i--) {
+            let j = Math.floor(Math.random() * (i + 1));
+            [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
+          }
+          return newArray;
+        };
+
+        const slidesDom = shuffle([].slice.call(_canvas.querySelectorAll(options.slide)))
+        for (let i=0; i<slidesDom.length; i++) {
+          _canvas.appendChild(_canvas.removeChild(slidesDom[i]))
+        }
       }
 
       const _reference = target.querySelector(options.reference) || root;
@@ -228,12 +247,13 @@ const newSpider = (target, options) => {
 
       if (0 < _dots.length) {
         [].slice.call(_dots).forEach(
-          (_dot) => {
+          (_dot, index) => {
+            _dot.setAttribute('data-id', index);
             const dot = new Dot(
               _dot,
               {
-                initial: canvas.getCurrent() === Number(_dot.getAttribute('data-id')),
-                relatedSlide: canvas.getSlide(Number(_dot.getAttribute('data-id'))),
+                initial: canvas.getCurrent() === index,
+                relatedSlide: canvas.getSlide(index),
                 handleClick: (event) => {
                   stopAutoSlide();
 

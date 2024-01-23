@@ -10,7 +10,10 @@ export class abstractCanvas {
   constructor(target, args) {
     this.dom                   = target;
     this.args                  = args;
-    this.slides                = [].slice.call(this.dom.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
+    this.slides                = [].slice.call(this.dom.querySelectorAll(this.args.slide)).map((slide, index) => {
+      slide.setAttribute('data-id', index);
+      return new Slide(slide);
+    });
     this.historyActiveSlideIds = [];
 
     this.dragStartX          = undefined;

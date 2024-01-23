@@ -72,22 +72,22 @@ or
 <div class="spider-container">
   <div class="spider">
     <div class="spider__canvas">
-      <div class="spider__slide" data-id="0">
+      <div class="spider__slide">
         <img class="spider__figure" src="img/blue.jpg" alt="">
       </div>
-      <div class="spider__slide" data-id="1">
+      <div class="spider__slide">
         <img class="spider__figure" src="img/green.jpg" alt="">
       </div>
-      <div class="spider__slide" data-id="2">
+      <div class="spider__slide">
         <img class="spider__figure" src="img/orange.jpg" alt="">
       </div>
-      <div class="spider__slide" data-id="3">
+      <div class="spider__slide">
         <img class="spider__figure" src="img/pink.jpg" alt="">
       </div>
-      <div class="spider__slide" data-id="4">
+      <div class="spider__slide">
         <img class="spider__figure" src="img/purple.jpg" alt="">
       </div>
-      <div class="spider__slide" data-id="5">
+      <div class="spider__slide">
         <p>
           Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
         </p>
@@ -99,12 +99,12 @@ or
   </div>
 
   <div class="spider__dots">
-    <button class="spider__dot" data-id="0">0</button>
-    <button class="spider__dot" data-id="1">1</button>
-    <button class="spider__dot" data-id="2">2</button>
-    <button class="spider__dot" data-id="3">3</button>
-    <button class="spider__dot" data-id="4">4</button>
-    <button class="spider__dot" data-id="5">5</button>
+    <button class="spider__dot">0</button>
+    <button class="spider__dot">1</button>
+    <button class="spider__dot">2</button>
+    <button class="spider__dot">3</button>
+    <button class="spider__dot">4</button>
+    <button class="spider__dot">5</button>
   </div>
 </div>
 ```
