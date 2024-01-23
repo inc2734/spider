@@ -77,58 +77,10 @@ const newSpider = (target, options) => {
       stopAutoSlide();
       autoSlideTimerId = setInterval(
         () => {
-          const activeSlides = canvas.getSlides().filter((slide) => slide.isActive());
-          const lastSlide = [...canvas.getSlides()].pop();
-          if (activeSlides.includes(lastSlide)) {
-            this.moveTo(0);
-          } else {
-            this.next();
-          }
+          this.next();
         },
         interval
       );
-    };
-
-    const getPrev = () => {
-      const current = !! canvas && canvas.getCurrent();
-      if (false === current) {
-        return false;
-      }
-
-      if (0 === current) {
-        const lastSlide = canvas.getSlides().length - 1;
-        return lastSlide;
-      }
-
-      let prev;
-      [...canvas.getSlides()].some((slide, index) => {
-        if (slide.isActive()) {
-          prev = index - 1;
-          return true;
-        }
-      });
-      return prev;
-    };
-
-    const getNext = () => {
-      const current = !! canvas && canvas.getCurrent();
-      if (false === current) {
-        return false;
-      }
-
-      const lastSlide = [...canvas.getSlides()].pop();
-      if (lastSlide.isActive()) {
-        return 0;
-      }
-
-      let next;
-      [...canvas.getSlides()].some((slide, index) => {
-        if (slide.isActive()) {
-          next = index + 1;
-          return true;
-        }
-      });
-      return next;
     };
 
     this.initialized = false;
@@ -162,6 +114,16 @@ const newSpider = (target, options) => {
       if (! _canvas) {
         return;
       }
+
+      const _reference = target.querySelector(options.reference) || root;
+      if (! _reference) {
+        return;
+      }
+
+      const _prevArrow = target.querySelector(options.prevArrow);
+      const _nextArrow = target.querySelector(options.nextArrow);
+      const _dots      = target.querySelector(options.dots);
+
       if (container.getShuffle()) {
         const shuffle = (array) => {
           const newArray = [...array];
@@ -172,20 +134,41 @@ const newSpider = (target, options) => {
           return newArray;
         };
 
-        const slidesDom = shuffle([].slice.call(_canvas.querySelectorAll(options.slide)))
-        for (let i=0; i<slidesDom.length; i++) {
-          _canvas.appendChild(_canvas.removeChild(slidesDom[i]))
+        const slidesDom = [].slice.call(_canvas.querySelectorAll(options.slide));
+        const dotsDom   = [].slice.call(_dots.querySelectorAll(options.dot));
+
+        const shuffledSlidesDomKeys = shuffle(slidesDom.keys());
+        shuffledSlidesDomKeys.forEach((i) => {
+          _canvas.appendChild(_canvas.removeChild(slidesDom[i]));
+          _dots.appendChild(_dots.removeChild(dotsDom[i]));
+        });
+      }
+
+      const canvasClass = container.getFade()
+        ? FadeCanvas
+        : SlideCanvas;
+
+      canvas = new canvasClass(
+        _canvas,
+        {
+          slide: options.slide,
+          reference: _reference,
+          container,
         }
-      }
+      );
 
-      const _reference = target.querySelector(options.reference) || root;
-      if (! _reference) {
-        return;
-      }
+      const interval = container.getInterval();
+      if (0 < interval) {
+        startAutoSlide(interval);
 
-      const _prevArrow = target.querySelector(options.prevArrow);
-      const _nextArrow = target.querySelector(options.nextArrow);
-      const _dots      = target.querySelectorAll(options.dot);
+        ['mousedown'].forEach(
+          (type) => _canvas.addEventListener(type, () => stopAutoSlide(), false)
+        );
+
+        ['mouseup', 'mouseleave'].forEach(
+          (type) => _canvas.addEventListener(type, () => startAutoSlide(interval), false)
+        );
+      }
 
       if (!! _prevArrow) {
         prevArrow = new PrevArrow(
@@ -219,41 +202,14 @@ const newSpider = (target, options) => {
         );
       }
 
-      const canvasClass = container.getFade()
-        ? FadeCanvas
-        : SlideCanvas;
-
-      canvas = new canvasClass(
-        _canvas,
-        {
-          slide: options.slide,
-          reference: _reference,
-          container,
-        }
-      );
-
-      const interval = container.getInterval();
-      if (0 < interval) {
-        startAutoSlide(interval);
-
-        ['mousedown'].forEach(
-          (type) => _canvas.addEventListener(type, () => stopAutoSlide(), false)
-        );
-
-        ['mouseup', 'mouseleave'].forEach(
-          (type) => _canvas.addEventListener(type, () => startAutoSlide(interval), false)
-        );
-      }
-
-      if (0 < _dots.length) {
-        [].slice.call(_dots).forEach(
-          (_dot, index) => {
-            _dot.setAttribute('data-id', index);
+      if (!! _dots) {
+        [].slice.call(_dots.querySelectorAll(options.dot)).forEach(
+          (_dot) => {
             const dot = new Dot(
               _dot,
               {
-                initial: canvas.getCurrent() === index,
-                relatedSlide: canvas.getSlide(index),
+                initial: canvas.getCurrent() === Number(_dot.getAttribute('data-id')),
+                relatedSlide: canvas.getSlideById(_dot.getAttribute('data-id')),
                 handleClick: (event) => {
                   stopAutoSlide();
 
@@ -273,25 +229,15 @@ const newSpider = (target, options) => {
     };
 
     this.prev = () => {
-      const prev = getPrev();
-      if (false === typeof prev) {
-        return;
-      }
-
-      this.moveTo(prev);
+      this.moveTo(canvas.getPrevSlide().getId());
     };
 
     this.next = () => {
-      const next = getNext();
-      if (false === typeof next) {
-        return;
-      }
-
-      this.moveTo(next);
+      this.moveTo(canvas.getNextSlide().getId());
     };
 
-    this.moveTo = (index) => {
-      !! canvas && !! canvas.getSlide(index) && canvas.setCurrent(index);
+    this.moveTo = (id) => {
+      !! canvas && canvas.setCurrent(id);
     };
 
     const initObserver = new IntersectionObserver(
@@ -325,6 +271,7 @@ export default function Spider(target, args = {}) {
     slide: '.spider__slide',
     prevArrow: '.spider__arrow[data-direction="prev"]',
     nextArrow: '.spider__arrow[data-direction="next"]',
+    dots: '.spider__dots',
     dot: '.spider__dot',
   };
 

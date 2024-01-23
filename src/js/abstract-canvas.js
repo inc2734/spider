@@ -10,10 +10,7 @@ export class abstractCanvas {
   constructor(target, args) {
     this.dom                   = target;
     this.args                  = args;
-    this.slides                = [].slice.call(this.dom.querySelectorAll(this.args.slide)).map((slide, index) => {
-      slide.setAttribute('data-id', index);
-      return new Slide(slide);
-    });
+    this.slides                = [].slice.call(this.dom.querySelectorAll(this.args.slide)).map((slide) => new Slide(slide));
     this.historyActiveSlideIds = [];
 
     this.dragStartX          = undefined;
@@ -46,7 +43,7 @@ export class abstractCanvas {
 
       // const width = `${ Math.floor(this.offsetWidth()) }px`;
       const width = this.contentWidth();
-      this.setCurrent(0);
+      this.setCurrent(this.getSlide(0).getId());
       this.args.container.setProperty('--spider--reference-width', `${ this.referenceWidth() }px`);
       this.args.container.setProperty('--spider--canvas-width', width);
       this.afterInit();
@@ -64,12 +61,7 @@ export class abstractCanvas {
 
     const observer = new MutationObserver(
       () => {
-        const currentSlideDom = this.dom.querySelector(`[data-id="${ this.getCurrent() }"]`);
-        if (! currentSlideDom) {
-          return;
-        }
-
-        const currentSlide = this.slides[ this.getCurrent() ];
+        const currentSlide = this.getCurrentSlide();
         if (! currentSlide) {
           return;
         }
@@ -211,6 +203,38 @@ export class abstractCanvas {
 
   getSlide(index) {
     return this.slides[ index ];
+  }
+
+  getSlideById(id) {
+    return this.getSlides().find((slide) => slide.getId() === Number(id));
+  }
+
+  getCurrentSlide() {
+    return this.getSlideById(this.getCurrent());
+  }
+
+  getPrevSlide() {
+    const current   = this.getCurrent();
+    const prevSlide = this.getSlide(this.getSlides().findIndex((slide) => current === slide.getId()) - 1);
+    return !! prevSlide
+      ? prevSlide
+      : this.getSlide(this.getSlides().length - 1);
+  }
+
+  getNextSlide() {
+    if ([...this.getSlides()].pop().getId() === [...this.getActiveSlides()].pop().getId()) {
+      return this.getSlide(0);
+    }
+
+    const current   = this.getCurrent();
+    const nextSlide = this.getSlide(this.getSlides().findIndex((slide) => current === slide.getId()) + 1);
+    return !! nextSlide
+      ? nextSlide
+      : this.getSlide(0);
+  }
+
+  getActiveSlides() {
+    return this.getSlides().filter((slide) => slide.isActive());
   }
 
   setCurrentForWheel() {

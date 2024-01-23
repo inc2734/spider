@@ -77,7 +77,7 @@ export class SlideCanvas extends abstractCanvas {
     this.canvasScrollTimerId = setTimeout(
       () => {
         const canvasLeft       = this.left();
-        const currentSlideLeft = this.getSlide(this.getCurrent()).left();
+        const currentSlideLeft = this.getCurrentSlide().left();
         const diff             = Math.abs(canvasLeft - currentSlideLeft);
         if (1 < diff) {
           this.setCurrentForWheel();
@@ -128,14 +128,7 @@ export class SlideCanvas extends abstractCanvas {
 
   moveTo(currentSlide) {
     const start = this.scrollLeft();
-    const maxScrollVolume = this.scrollWidth() - this.offsetWidth();
-
-    let goto = start + (currentSlide.left() - this.left());
-    if (maxScrollVolume < goto) {
-      goto = maxScrollVolume;
-    } else if (0 > goto || 0 === currentSlide.getId()) {
-      goto = 0;
-    }
+    const goto  = start + (currentSlide.left() - this.left());
 
     this.moveToLeft(goto);
   }

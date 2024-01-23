@@ -36,12 +36,13 @@ export class FadeCanvas extends abstractCanvas {
 
   handleMouseup(event) {
     const distanceMoved = event.clientX - this.dragStartX;
-    const current       = this.getCurrent();
 
     if (0 < distanceMoved) {
-      0 < current && this.setCurrent(current - 1);
+      const prevSlide = this.getPrevSlide();
+      !! prevSlide && this.setCurrent(prevSlide.getId());
     } else if (0 > distanceMoved) {
-      this.getSlides().length - 1 > current && this.setCurrent(current + 1);
+      const nextSlide = this.getNextSlide();
+      !! nextSlide && this.setCurrent(nextSlide.getId());
     }
   }
 
