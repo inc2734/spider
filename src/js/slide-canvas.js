@@ -31,13 +31,10 @@ export class SlideCanvas extends abstractCanvas {
         },
         {
           root: this.dom,
-          rootMargin: "0px -1.5px",
-          threshold: [0.75, 1],
+          rootMargin: "0px",
+          threshold: [0.5, 1],
         }
       );
-      this.slides.forEach((slide) => {
-        activeSlideIdsObserver.observe(slide.dom);
-      });
 
       const visibleSlideIdsObserver = new IntersectionObserver(
         (entries) => {
@@ -56,7 +53,9 @@ export class SlideCanvas extends abstractCanvas {
           threshold: [0],
         }
       );
-      this.slides.forEach((slide) => {
+
+      this.getSlides().forEach((slide) => {
+        activeSlideIdsObserver.observe(slide.dom);
         visibleSlideIdsObserver.observe(slide.dom);
       });
     }
@@ -121,7 +120,7 @@ export class SlideCanvas extends abstractCanvas {
         ? slide
         : accumulator;
     };
-    const nearlySlide = this.slides.reduce(reducer);
+    const nearlySlide = this.getSlides().reduce(reducer);
     this.setCurrent(nearlySlide.getId());
     addCustomEvent(this.dom, 'setCurrentForWheel');
   }

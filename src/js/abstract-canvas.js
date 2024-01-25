@@ -222,15 +222,19 @@ export class abstractCanvas {
   }
 
   getNextSlide() {
-    const allSlides     = [...this.getSlides()];
-    const visibleSlides = [...this.getVisibleSlides()];
+    const allSlides    = [...this.getSlides()];
+    const activeSlides = [...this.getActiveSlides()];
 
-    if (0 < allSlides.length && 0 < visibleSlides.length && allSlides.pop().getId() === visibleSlides.pop().getId()) {
+    if (1 > allSlides.length || 1 > activeSlides.length) {
+      return this.getSlide(0);
+    }
+
+    if (allSlides?.[allSlides.length - 1]?.getId() === activeSlides?.[activeSlides.length - 1]?.getId()) {
       return this.getSlide(0);
     }
 
     const current   = this.getCurrent();
-    const nextSlide = this.getSlide(this.getSlides().findIndex((slide) => current === slide.getId()) + 1);
+    const nextSlide = this.getSlide(allSlides.findIndex((slide) => current === slide.getId()) + 1);
     return !! nextSlide
       ? nextSlide
       : this.getSlide(0);
