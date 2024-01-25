@@ -222,7 +222,10 @@ export class abstractCanvas {
   }
 
   getNextSlide() {
-    if ([...this.getSlides()].pop().getId() === [...this.getActiveSlides()].pop().getId()) {
+    const allSlides     = [...this.getSlides()];
+    const visibleSlides = [...this.getVisibleSlides()];
+
+    if (0 < allSlides.length && 0 < visibleSlides.length && allSlides.pop().getId() === visibleSlides.pop().getId()) {
       return this.getSlide(0);
     }
 
@@ -235,6 +238,10 @@ export class abstractCanvas {
 
   getActiveSlides() {
     return this.getSlides().filter((slide) => slide.isActive());
+  }
+
+  getVisibleSlides() {
+    return this.getSlides().filter((slide) => slide.isVisible());
   }
 
   setCurrentForWheel() {

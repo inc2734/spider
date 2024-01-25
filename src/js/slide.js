@@ -48,4 +48,8 @@ export function Slide(target) {
   this.isActive = () => {
     return 'true' === this.dom.getAttribute('data-active');
   }
+
+  this.isVisible = () => {
+    return 'true' === this.dom.getAttribute('data-visible');
+  }
 }
