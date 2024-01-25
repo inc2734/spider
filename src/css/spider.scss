@@ -141,10 +141,29 @@
   top: calc(50% - var(--spider--arrow-button-size) / 2);
 }
 
+.spider__start,
+.spider__stop {
+  background-color: transparent;
+  border: none;
+  border-radius: 0;
+  line-height: 1;
+  padding: 0;
+  cursor: pointer;
+}
+
+[data-interval]:not(.is-auto-playing) .spider__stop {
+  display: none;
+}
+
+[data-interval].is-auto-playing .spider__start {
+  display: none;
+}
+
 .spider__dots {
   display: flex;
   gap: var(--spider--dots-gap);
   justify-content: center;
+  align-items: center;
 
   .spider + & {
     margin-top: 1em;

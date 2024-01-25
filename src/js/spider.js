@@ -4,6 +4,8 @@ import { SlideCanvas } from './slide-canvas';
 import { FadeCanvas } from './fade-canvas';
 import { PrevArrow } from './prev-arrow';
 import { NextArrow } from './next-arrow';
+import { StartButton } from './start-button';
+import { StopButton } from './stop-button';
 import { Dot } from './dot';
 
 function spiderContainer(target) {
@@ -63,24 +65,28 @@ const newSpider = (target, options) => {
   return new function() {
     const _clonedTarget = target.cloneNode(true);
 
-    let canvas    = undefined;
-    let prevArrow = undefined;
-    let nextArrow = undefined;
+    let canvas      = undefined;
+    let prevArrow   = undefined;
+    let nextArrow   = undefined;
+    let startButton = undefined;
+    let stopButton  = undefined;
 
-    let autoSlideTimerId = undefined;
+    let autoPlayTimerId = undefined;
 
-    const stopAutoSlide = () => {
-      clearInterval(autoSlideTimerId);
+    this.stopAutoPlay = () => {
+      clearInterval(autoPlayTimerId);
+      target.classList.remove('is-auto-playing');
     };
 
-    const startAutoSlide = (interval) => {
-      stopAutoSlide();
-      autoSlideTimerId = setInterval(
+    this.startAutoPlay = (interval) => {
+      this.stopAutoPlay();
+      autoPlayTimerId = setInterval(
         () => {
           this.next();
         },
         interval
       );
+      target.classList.add('is-auto-playing');
     };
 
     this.initialized = false;
@@ -120,9 +126,11 @@ const newSpider = (target, options) => {
         return;
       }
 
-      const _prevArrow = target.querySelector(options.prevArrow);
-      const _nextArrow = target.querySelector(options.nextArrow);
-      const _dots      = target.querySelector(options.dots);
+      const _prevArrow   = target.querySelector(options.prevArrow);
+      const _nextArrow   = target.querySelector(options.nextArrow);
+      const _startButton = target.querySelector(options.startButton);
+      const _stopButton  = target.querySelector(options.stopButton);
+      const _dots        = target.querySelector(options.dots);
 
       if (container.getShuffle()) {
         const shuffle = (array) => {
@@ -159,14 +167,28 @@ const newSpider = (target, options) => {
 
       const interval = container.getInterval();
       if (0 < interval) {
-        startAutoSlide(interval);
+        this.startAutoPlay(interval);
 
-        ['mousedown'].forEach(
-          (type) => _canvas.addEventListener(type, () => stopAutoSlide(), false)
-        );
+        _canvas.addEventListener(
+          'mousedown',
+          () => {
+            const preAutoPlaying = target.classList.contains('is-auto-playing');
 
-        ['mouseup', 'mouseleave'].forEach(
-          (type) => _canvas.addEventListener(type, () => startAutoSlide(interval), false)
+            this.stopAutoPlay();
+
+            if (preAutoPlaying) {
+              ['mouseup', 'mouseout'].forEach(
+                (type) => {
+                  const reStart = () => {
+                    this.startAutoPlay(interval);
+                    _canvas.removeEventListener(type, reStart, false);
+                  };
+                  _canvas.addEventListener(type, reStart, false);
+                }
+              );
+            }
+          },
+          false
         );
       }
 
@@ -175,12 +197,12 @@ const newSpider = (target, options) => {
           _prevArrow,
           {
             handleClick: () => {
-              stopAutoSlide();
+              this.stopAutoPlay();
 
               this.prev();
 
               const interval = container.getInterval();
-              0 < interval && startAutoSlide(interval);
+              0 < interval && this.startAutoPlay(interval);
             },
           }
         );
@@ -191,12 +213,35 @@ const newSpider = (target, options) => {
           _nextArrow,
           {
             handleClick: () => {
-              stopAutoSlide();
+              this.stopAutoPlay();
 
               this.next();
 
               const interval = container.getInterval();
-              0 < interval && startAutoSlide(interval);
+              0 < interval && this.startAutoPlay(interval);
+            },
+          }
+        );
+      }
+
+      if (!! _startButton) {
+        startButton = new StartButton(
+          _startButton,
+          {
+            handleClick: () => {
+              const interval = container.getInterval();
+              0 < interval && this.startAutoPlay(interval);
+            },
+          }
+        );
+      }
+
+      if (!! _stopButton) {
+        stopButton = new StopButton(
+          _stopButton,
+          {
+            handleClick: () => {
+              this.stopAutoPlay();
             },
           }
         );
@@ -211,12 +256,12 @@ const newSpider = (target, options) => {
                 initial: canvas.getCurrent() === Number(_dot.getAttribute('data-id')),
                 relatedSlide: canvas.getSlideById(_dot.getAttribute('data-id')),
                 handleClick: (event) => {
-                  stopAutoSlide();
+                  this.stopAutoPlay();
 
                   this.moveTo(event.currentTarget.getAttribute('data-id'));
 
                   const interval = container.getInterval();
-                  0 < interval && startAutoSlide(interval);
+                  0 < interval && this.startAutoPlay(interval);
                 },
               }
             );
@@ -271,6 +316,8 @@ export default function Spider(target, args = {}) {
     slide: '.spider__slide',
     prevArrow: '.spider__arrow[data-direction="prev"]',
     nextArrow: '.spider__arrow[data-direction="next"]',
+    startButton: '.spider__start',
+    stopButton: '.spider__stop',
     dots: '.spider__dots',
     dot: '.spider__dot',
   };

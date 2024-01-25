@@ -410,9 +410,9 @@ var spider = new Spider('#using-id-selector');
   &lt;/div&gt;
 &lt;/div&gt;</pre>
 
-  <h2>Auto slide</h2>
+  <h2>Auto play</h2>
   <h3>Slide</h3>
-  <div class="spider-container" id="interval" data-interval="5000">
+  <div class="spider-container" id="interval" data-interval="2000">
     <div class="spider">
       <div class="spider__canvas">
         <div class="spider__slide" data-id="0">
@@ -442,6 +442,8 @@ var spider = new Spider('#using-id-selector');
     </div>
 
     <div class="spider__dots">
+      <button class="spider__stop" title="Stop auto play">⏸</button>
+      <button class="spider__start" title="Start auto play">▶</button>
       <button class="spider__dot" data-id="0">0</button>
       <button class="spider__dot" data-id="1">1</button>
       <button class="spider__dot" data-id="2">2</button>
@@ -451,7 +453,7 @@ var spider = new Spider('#using-id-selector');
     </div>
   </div>
 
-  <pre>&lt;div class="spider-container" data-interval="5000"&gt;
+  <pre>&lt;div class="spider-container" data-interval="2000"&gt;
     &lt;div class="spider"&gt;
     &lt;div class="spider__canvas"&gt;
       &lt;div class="spider__slide" data-id="0"&gt;
@@ -465,6 +467,8 @@ var spider = new Spider('#using-id-selector');
   &lt;/div&gt;
 
   &lt;div class="spider__dots"&gt;
+    &lt;button class="spider__stop" title="Stop auto play"&gt;⏸&lt;/button&gt;
+    &lt;button class="spider__start" title="Start auto play"&gt;▶&lt;/button&gt;
     &lt;button class="spider__dot" data-id="0"&gt;0&lt;/button&gt;
     ...
   &lt;/div&gt;
@@ -530,7 +534,7 @@ var spider = new Spider('#using-id-selector');
 &lt;/div&gt;</pre>
 
   <h3>Fade</h3>
-  <div class="spider-container" id="interval-fade" data-interval="5000" data-fade="true">
+  <div class="spider-container" id="interval-fade" data-interval="2000" data-fade="true">
     <div class="spider">
       <div class="spider__canvas">
         <div class="spider__slide" data-id="0">
@@ -548,7 +552,7 @@ var spider = new Spider('#using-id-selector');
         <div class="spider__slide" data-id="4">
           <img class="spider__figure" src="img/purple.jpg" alt="">
         </div>
-        <div class="spider__slide" data-id="5 data-id="0"">
+        <div class="spider__slide" data-id="5">
           <p>
             <a href="https://github.com/inc2734/spider">Lorem ipsum</a> dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillu
           </p>
@@ -560,6 +564,8 @@ var spider = new Spider('#using-id-selector');
     </div>
 
     <div class="spider__dots">
+      <button class="spider__stop" title="Stop auto play">⏸</button>
+      <button class="spider__start" title="Start auto play">▶</button>
       <button class="spider__dot" data-id="0">0</button>
       <button class="spider__dot" data-id="1">1</button>
       <button class="spider__dot" data-id="2">2</button>
@@ -569,7 +575,7 @@ var spider = new Spider('#using-id-selector');
     </div>
   </div>
 
-  <pre>&lt;div class="spider-container" data-interval="5000" data-fade="true"&gt;
+  <pre>&lt;div class="spider-container" data-interval="2000" data-fade="true"&gt;
     &lt;div class="spider"&gt;
     &lt;div class="spider__canvas"&gt;
       &lt;div class="spider__slide" data-id="0"&gt;
@@ -583,6 +589,8 @@ var spider = new Spider('#using-id-selector');
   &lt;/div&gt;
 
   &lt;div class="spider__dots"&gt;
+    &lt;button class="spider__stop" title="Stop auto play"&gt;⏸&lt;/button&gt;
+    &lt;button class="spider__start" title="Start auto play"&gt;▶&lt;/button&gt;
     &lt;button class="spider__dot" data-id="0"&gt;0&lt;/button&gt;
     ...
   &lt;/div&gt;
