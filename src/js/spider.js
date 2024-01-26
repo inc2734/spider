@@ -143,7 +143,7 @@ const newSpider = (target, options) => {
         };
 
         const slidesDom = [].slice.call(_canvas.querySelectorAll(options.slide));
-        const dotsDom   = [].slice.call(_dots.querySelectorAll(options.dot));
+        const dotsDom   = [].slice.call(_dots.querySelectorAll(`:scope > ${ options.dot }`));
 
         const shuffledSlidesDomKeys = shuffle(slidesDom.keys());
         shuffledSlidesDomKeys.forEach((i) => {
